@@ -1,0 +1,1003 @@
+{
+  "nodes": [
+    {
+      "id": "1775752030903",
+      "data": {
+        "desc": "共创平台 Web、APP、小程序或飞书侧发起的 AI 助手请求。",
+        "type": "start",
+        "title": "客户请求",
+        "selected": true,
+        "variables": [
+          {
+            "hint": "用于回访与核验用户信息",
+            "type": "text-input",
+            "label": "联系人姓名",
+            "default": "",
+            "options": [],
+            "required": false,
+            "variable": "customer_name",
+            "placeholder": "如：王小明"
+          },
+          {
+            "hint": "请尽量包含现象、影响范围、页面位置与期望动作",
+            "type": "paragraph",
+            "label": "问题详情（必填）",
+            "default": "",
+            "options": [],
+            "required": true,
+            "variable": "customer_issue",
+            "placeholder": "例如：供应商入驻后找不到合同授权入口"
+          },
+          {
+            "hint": "后端初判分类，仅作为辅助参考，分类器仍以问题内容为准",
+            "type": "select",
+            "label": "问题类型",
+            "default": "",
+            "options": [
+              "账号权限与登录",
+              "菜单定位与操作引导",
+              "供应商入驻",
+              "合同授权与结算",
+              "加盟商商机与门店运营",
+              "经销商业务问题",
+              "工单与人工客服",
+              "附件图片文件识别",
+              "系统异常与缺陷",
+              "其他问题"
+            ],
+            "required": false,
+            "variable": "issue_type",
+            "placeholder": "请选择"
+          },
+          {
+            "hint": "用于角色化回答与权限判断",
+            "type": "select",
+            "label": "客户类型",
+            "default": "未选择",
+            "options": [
+              "未选择",
+              "员工",
+              "加盟商",
+              "供应商",
+              "经销商",
+              "消费者",
+              "其他"
+            ],
+            "required": false,
+            "variable": "customer_identity",
+            "placeholder": "请选择"
+          },
+          {
+            "hint": "便于人工客服回访核实（可选）",
+            "type": "text-input",
+            "label": "联系人电话",
+            "default": "",
+            "options": [],
+            "required": false,
+            "variable": "contact_phone",
+            "placeholder": "例如：138****8888"
+          },
+          {
+            "hint": "有订单、合同、工单编号可加快核验（可选）",
+            "type": "text-input",
+            "label": "订单/合同/工单编号（可选）",
+            "default": "",
+            "options": [],
+            "required": false,
+            "variable": "case_reference",
+            "placeholder": "如有请填写"
+          },
+          {
+            "hint": "如问题紧急，请先说明（未提供可留空）",
+            "type": "select",
+            "label": "紧急程度",
+            "default": "未选择",
+            "options": [
+              "未选择",
+              "高",
+              "中",
+              "低"
+            ],
+            "required": false,
+            "variable": "urgency_level",
+            "placeholder": "请选择"
+          },
+          {
+            "hint": "共创Web、飞书、APP、小程序等",
+            "type": "select",
+            "label": "渠道",
+            "default": "共创Web",
+            "options": [
+              "共创Web",
+              "飞书",
+              "APP",
+              "小程序",
+              "后台测试"
+            ],
+            "required": false,
+            "variable": "channel",
+            "placeholder": "请选择"
+          },
+          {
+            "hint": "当前页面或菜单编码，用于菜单定位",
+            "type": "text-input",
+            "label": "页面编码",
+            "default": "",
+            "options": [],
+            "required": false,
+            "variable": "page_code",
+            "placeholder": "如：home、contract"
+          },
+          {
+            "hint": "当前页面状态、已选对象、表单上下文",
+            "type": "paragraph",
+            "label": "页面上下文",
+            "default": "",
+            "options": [],
+            "required": false,
+            "variable": "page_context",
+            "placeholder": "可由前端自动传入"
+          },
+          {
+            "hint": "text / multimodal / voice",
+            "type": "select",
+            "label": "输入模式",
+            "default": "text",
+            "options": [
+              "text",
+              "multimodal",
+              "voice"
+            ],
+            "required": false,
+            "variable": "input_mode",
+            "placeholder": "请选择"
+          },
+          {
+            "hint": "图片、PDF、Excel、Word、音频、视频等附件。图片应交给多模态模型直接理解，不使用 OCR 伪装为识别结果。",
+            "type": "file",
+            "label": "上传图片/文件",
+            "default": null,
+            "options": [],
+            "required": false,
+            "variable": "customer_file",
+            "allowed_file_types": [
+              "document",
+              "image",
+              "audio",
+              "video"
+            ],
+            "allowed_file_extensions": [],
+            "allowed_file_upload_methods": [
+              "local_file",
+              "remote_url"
+            ]
+          }
+        ]
+      },
+      "type": "custom",
+      "width": 242,
+      "height": 437,
+      "position": {
+        "x": -233.9955502014945,
+        "y": 257
+      },
+      "selected": false,
+      "sourcePosition": "right",
+      "targetPosition": "left",
+      "positionAbsolute": {
+        "x": -233.9955502014945,
+        "y": 257
+      }
+    },
+    {
+      "id": "1775752097077",
+      "data": {
+        "desc": "根据用户身份、问题文本、页面上下文和附件状态，将请求路由到对应能力分支。",
+        "type": "question-classifier",
+        "model": {
+          "mode": "chat",
+          "name": "deepseek-v4-flash",
+          "provider": "langgenius/deepseek/deepseek",
+          "completion_params": {
+            "temperature": 0
+          }
+        },
+        "title": "总入口问题分类器",
+        "vision": {
+          "enabled": false
+        },
+        "classes": [
+          {
+            "id": "1",
+            "name": "政策规则知识问答：公司政策、合作规则、活动规则、权限说明、FAQ、操作手册。"
+          },
+          {
+            "id": "2",
+            "name": "菜单定位与操作引导：功能入口、下一步操作、页面跳转、待办入口、合同入口、报名入口。"
+          },
+          {
+            "id": "3",
+            "name": "数据查询与分析：经营数据、订单、库存、叫货、对账、分润、费用、销售、指标异常。"
+          },
+          {
+            "id": "4",
+            "name": "任务执行与表单办理：表单填写、流程办理、进度追踪、导出、预约、报名、提交。"
+          },
+          {
+            "id": "5",
+            "name": "附件多模态识别：图片、截图、PDF、Excel、Word、视频、线下表单、合同、票据识别。"
+          },
+          {
+            "id": "6",
+            "name": "工单与人工客服：转人工、工单状态、评价服务、客服回复、飞书通知、服务时间。"
+          },
+          {
+            "id": "7",
+            "name": "主动服务与节点提醒：今日待办、商机提醒、入驻后通知、合同订单结算节点、指标预警。"
+          },
+          {
+            "id": "8",
+            "name": "系统异常与缺陷：页面加载失败、系统卡死、按钮不可用、AI回答异常、接口错误、功能缺陷。"
+          },
+          {
+            "id": "9",
+            "name": "其他问题：无法归入以上分类、信息不足、闲聊或超出业务范围，需要兜底追问。"
+          }
+        ],
+        "selected": false,
+        "description": "读取用户请求，按问题类型与关键词进行分流。",
+        "instruction": "只选择一个最匹配分类，不要输出解释。\n优先根据 customer_issue 判断，issue_type 仅作辅助参考。\n涉及入口、在哪里、下一步、怎么操作、跳转、待办、合同授权入口，选择“菜单定位与操作引导”。\n涉及真实数据、状态、订单、库存、对账、分润、费用、指标，选择“数据查询与分析”。\n涉及提交、办理、导出、预约、报名、填表、审批，选择“任务执行与表单办理”。\n涉及图片、截图、文件、PDF、Excel、OCR、页面理解、信息提取，选择“附件多模态识别”。\n涉及转人工、工单、评价、客服回复、飞书，选择“工单与人工客服”。\n涉及每日待办、节点提醒、商机提醒、主动推送、指标预警，选择“主动服务与节点提醒”。\n涉及加载失败、卡死、按钮不可用、接口错误或 AI 回答异常，选择“系统异常与缺陷”。\n无法判断或信息不足时选择“其他问题”。",
+        "instructions": "只选择一个最匹配分类，不要输出解释。\n优先根据 customer_issue 判断，issue_type 仅作辅助参考。\n涉及入口、在哪里、下一步、怎么操作、跳转、待办、合同授权入口，选择“菜单定位与操作引导”。\n涉及真实数据、状态、订单、库存、对账、分润、费用、指标，选择“数据查询与分析”。\n涉及提交、办理、导出、预约、报名、填表、审批，选择“任务执行与表单办理”。\n涉及图片、截图、文件、PDF、Excel、OCR、页面理解、信息提取，选择“附件多模态识别”。\n涉及转人工、工单、评价、客服回复、飞书，选择“工单与人工客服”。\n涉及每日待办、节点提醒、商机提醒、主动推送、指标预警，选择“主动服务与节点提醒”。\n涉及加载失败、卡死、按钮不可用、接口错误或 AI 回答异常，选择“系统异常与缺陷”。\n无法判断或信息不足时选择“其他问题”。",
+        "query_variable_selector": [
+          "1775752030903",
+          "customer_issue"
+        ]
+      },
+      "type": "custom",
+      "width": 360,
+      "height": 820,
+      "position": {
+        "x": 449.9342815742,
+        "y": 278
+      },
+      "selected": false,
+      "sourcePosition": "right",
+      "targetPosition": "left",
+      "positionAbsolute": {
+        "x": 449.9342815742,
+        "y": 278
+      }
+    },
+    {
+      "id": "202606300301",
+      "data": {
+        "desc": "处理政策规则、系统操作、入口定位、供应商/加盟商/经销商常见流程。",
+        "type": "llm",
+        "model": {
+          "mode": "chat",
+          "name": "deepseek-v4-flash",
+          "provider": "langgenius/deepseek/deepseek",
+          "completion_params": {
+            "temperature": 0.2,
+            "max_tokens": 1024,
+            "top_p": 0.8
+          }
+        },
+        "title": "知识与操作引导 LLM",
+        "vision": {
+          "enabled": false
+        },
+        "context": {
+          "enabled": false,
+          "variable_selector": []
+        },
+        "selected": false,
+        "prompt_template": [
+          {
+            "id": "3703c9e2-492a-40e0-b63d-e79b0b330c14",
+            "role": "system",
+            "text": "你是来伊份共创平台 AI 客服助手“小伊”。\n回答必须使用中文，语气专业、简洁、客服式。\n先给结论，再给操作步骤或需要补充的信息。\n不要编造后台状态、审核结果、付款结果、手机号、合同号、门店信息、订单信息或接口返回。\n涉及真实业务数据、状态、审批、导出或提交动作时，必须说明需要通过后端权限校验或转人工核验。\n人工客服服务时间为周一至周五 09:00-18:00。\n转人工后不跳转页面，人工客服后台回复会回到当前对话。\n工单转派只能由客服后台操作，用户端不提供转派入口。\n不要使用 emoji，不要输出 Markdown 表格。\n\n你负责政策规则、FAQ、系统操作和菜单定位。\n针对不同身份给出对应路径：员工、加盟商、供应商、经销商。\n合同授权、入驻后下一步、今日待办等问题要先给常见入口，再说明如果看不到入口可能是权限或流程未完成。\n不能承诺真实状态；涉及状态核验时提示通过今日待办、合同管理或转人工确认。"
+          },
+          {
+            "id": "d3144566-04e8-486d-b7fd-ab32b0ed287c",
+            "role": "user",
+            "text": "以下是用户的完整输入信息：\n联系人姓名：{{#1775752030903.customer_name#}}\n问题：{{#1775752030903.customer_issue#}}\n系统初判问题类型：{{#1775752030903.issue_type#}}\n客户类型：{{#1775752030903.customer_identity#}}\n联系人电话：{{#1775752030903.contact_phone#}}\n订单/合同/工单编号：{{#1775752030903.case_reference#}}\n紧急程度：{{#1775752030903.urgency_level#}}\n当前渠道：{{#1775752030903.channel#}}\n当前页面编码：{{#1775752030903.page_code#}}\n当前页面上下文：{{#1775752030903.page_context#}}\n输入模式：{{#1775752030903.input_mode#}}\n\n请基于上述信息回答。"
+          }
+        ]
+      },
+      "type": "custom",
+      "width": 260,
+      "height": 130,
+      "position": {
+        "x": 1120,
+        "y": 80
+      },
+      "selected": false,
+      "sourcePosition": "right",
+      "targetPosition": "left",
+      "positionAbsolute": {
+        "x": 1120,
+        "y": 80
+      }
+    },
+    {
+      "id": "202606300302",
+      "data": {
+        "desc": "处理经营数据、订单库存、对账分润、费用收入、指标预警等数据类问题。",
+        "type": "llm",
+        "model": {
+          "mode": "chat",
+          "name": "deepseek-v4-flash",
+          "provider": "langgenius/deepseek/deepseek",
+          "completion_params": {
+            "temperature": 0.2,
+            "max_tokens": 1024,
+            "top_p": 0.8
+          }
+        },
+        "title": "数据分析 LLM",
+        "vision": {
+          "enabled": false
+        },
+        "context": {
+          "enabled": false,
+          "variable_selector": []
+        },
+        "selected": false,
+        "prompt_template": [
+          {
+            "id": "410961ab-6bd9-40f7-8e3c-1a01e92e0bb2",
+            "role": "system",
+            "text": "你是来伊份共创平台 AI 客服助手“小伊”。\n回答必须使用中文，语气专业、简洁、客服式。\n先给结论，再给操作步骤或需要补充的信息。\n不要编造后台状态、审核结果、付款结果、手机号、合同号、门店信息、订单信息或接口返回。\n涉及真实业务数据、状态、审批、导出或提交动作时，必须说明需要通过后端权限校验或转人工核验。\n人工客服服务时间为周一至周五 09:00-18:00。\n转人工后不跳转页面，人工客服后台回复会回到当前对话。\n工单转派只能由客服后台操作，用户端不提供转派入口。\n不要使用 emoji，不要输出 Markdown 表格。\n\n你负责数据查询与数据解释类问题。\n如果没有后端数据结果，不要编造数字；应说明需要通过数仓/业务系统权限校验后查询。\n回答中要明确数据口径、权限边界、建议查询维度和下一步动作。\n跨主体、导出、敏感数据必须要求权限校验或用户确认。"
+          },
+          {
+            "id": "17651880-23df-47c7-8c9a-254221abf481",
+            "role": "user",
+            "text": "以下是用户的完整输入信息：\n联系人姓名：{{#1775752030903.customer_name#}}\n问题：{{#1775752030903.customer_issue#}}\n系统初判问题类型：{{#1775752030903.issue_type#}}\n客户类型：{{#1775752030903.customer_identity#}}\n联系人电话：{{#1775752030903.contact_phone#}}\n订单/合同/工单编号：{{#1775752030903.case_reference#}}\n紧急程度：{{#1775752030903.urgency_level#}}\n当前渠道：{{#1775752030903.channel#}}\n当前页面编码：{{#1775752030903.page_code#}}\n当前页面上下文：{{#1775752030903.page_context#}}\n输入模式：{{#1775752030903.input_mode#}}\n\n请基于上述信息回答。"
+          }
+        ]
+      },
+      "type": "custom",
+      "width": 260,
+      "height": 130,
+      "position": {
+        "x": 1120,
+        "y": 250
+      },
+      "selected": false,
+      "sourcePosition": "right",
+      "targetPosition": "left",
+      "positionAbsolute": {
+        "x": 1120,
+        "y": 250
+      }
+    },
+    {
+      "id": "202606300303",
+      "data": {
+        "desc": "处理表单填写、流程办理、菜单跳转、进度追踪、预约报名、导出提交等任务。",
+        "type": "llm",
+        "model": {
+          "mode": "chat",
+          "name": "deepseek-v4-flash",
+          "provider": "langgenius/deepseek/deepseek",
+          "completion_params": {
+            "temperature": 0.2,
+            "max_tokens": 1024,
+            "top_p": 0.8
+          }
+        },
+        "title": "任务执行 LLM",
+        "vision": {
+          "enabled": false
+        },
+        "context": {
+          "enabled": false,
+          "variable_selector": []
+        },
+        "selected": false,
+        "prompt_template": [
+          {
+            "id": "e2c887a3-8784-49f8-aa2a-4ae3c955b1f6",
+            "role": "system",
+            "text": "你是来伊份共创平台 AI 客服助手“小伊”。\n回答必须使用中文，语气专业、简洁、客服式。\n先给结论，再给操作步骤或需要补充的信息。\n不要编造后台状态、审核结果、付款结果、手机号、合同号、门店信息、订单信息或接口返回。\n涉及真实业务数据、状态、审批、导出或提交动作时，必须说明需要通过后端权限校验或转人工核验。\n人工客服服务时间为周一至周五 09:00-18:00。\n转人工后不跳转页面，人工客服后台回复会回到当前对话。\n工单转派只能由客服后台操作，用户端不提供转派入口。\n不要使用 emoji，不要输出 Markdown 表格。\n\n你负责任务执行和表单办理。\n所有修改、提交、导出、预约、报名、审批、合同签订等动作必须两段式：先预览影响范围，再由用户确认后执行。\n缺少字段时先追问，不直接提交。\n当前若没有后端执行结果，只能给执行计划和需要补充的信息。"
+          },
+          {
+            "id": "02e2aeb4-d083-45b3-95d2-524d3ea00bed",
+            "role": "user",
+            "text": "以下是用户的完整输入信息：\n联系人姓名：{{#1775752030903.customer_name#}}\n问题：{{#1775752030903.customer_issue#}}\n系统初判问题类型：{{#1775752030903.issue_type#}}\n客户类型：{{#1775752030903.customer_identity#}}\n联系人电话：{{#1775752030903.contact_phone#}}\n订单/合同/工单编号：{{#1775752030903.case_reference#}}\n紧急程度：{{#1775752030903.urgency_level#}}\n当前渠道：{{#1775752030903.channel#}}\n当前页面编码：{{#1775752030903.page_code#}}\n当前页面上下文：{{#1775752030903.page_context#}}\n输入模式：{{#1775752030903.input_mode#}}\n\n请基于上述信息回答。"
+          }
+        ]
+      },
+      "type": "custom",
+      "width": 260,
+      "height": 130,
+      "position": {
+        "x": 1120,
+        "y": 420
+      },
+      "selected": false,
+      "sourcePosition": "right",
+      "targetPosition": "left",
+      "positionAbsolute": {
+        "x": 1120,
+        "y": 420
+      }
+    },
+    {
+      "id": "202606300304",
+      "data": {
+        "desc": "处理图片、视频、截图、PDF、Excel、合同、票据、线下表单和系统缺陷。",
+        "type": "llm",
+        "model": {
+          "mode": "chat",
+          "name": "qwen-vl-plus",
+          "provider": "langgenius/tongyi/tongyi",
+          "completion_params": {
+            "temperature": 0.2,
+            "max_tokens": 1024,
+            "top_p": 0.8
+          }
+        },
+        "title": "多模态附件 LLM",
+        "vision": {
+          "enabled": true,
+          "configs": {
+            "variable_selector": [
+              "1775752030903",
+              "customer_file"
+            ],
+            "detail": "high"
+          }
+        },
+        "context": {
+          "enabled": false,
+          "variable_selector": []
+        },
+        "selected": false,
+        "prompt_template": [
+          {
+            "id": "7b40fb3e-2f7f-404e-9ab9-5c78e165d979",
+            "role": "system",
+            "text": "你是来伊份共创平台 AI 客服助手“小伊”。\n回答必须使用中文，语气专业、简洁、客服式。\n先给结论，再给操作步骤或需要补充的信息。\n不要编造后台状态、审核结果、付款结果、手机号、合同号、门店信息、订单信息或接口返回。\n涉及真实业务数据、状态、审批、导出或提交动作时，必须说明需要通过后端权限校验或转人工核验。\n人工客服服务时间为周一至周五 09:00-18:00。\n转人工后不跳转页面，人工客服后台回复会回到当前对话。\n工单转派只能由客服后台操作，用户端不提供转派入口。\n不要使用 emoji，不要输出 Markdown 表格。\n\n你负责多模态附件和系统异常类问题。\n图片、截图和视频应由多模态模型直接理解；不要声称“本地 OCR 已识别”。\n当前节点已经绑定 customer_file 作为视觉输入；如果能看到图片，请直接描述图片里的页面结构、按钮位置和关键信息。\n若模型运行时没有收到视觉内容，才如实说明“已收到附件，但当前模型未拿到视觉内容”。\n对于系统缺陷，要求补充账号、时间、页面、操作路径、截图，并建议生成 P0/P1 工单。"
+          },
+          {
+            "id": "486d31ec-fd23-4a2e-9aeb-27db0ba9d526",
+            "role": "user",
+            "text": "以下是用户的完整输入信息：\n联系人姓名：{{#1775752030903.customer_name#}}\n问题：{{#1775752030903.customer_issue#}}\n系统初判问题类型：{{#1775752030903.issue_type#}}\n客户类型：{{#1775752030903.customer_identity#}}\n联系人电话：{{#1775752030903.contact_phone#}}\n订单/合同/工单编号：{{#1775752030903.case_reference#}}\n紧急程度：{{#1775752030903.urgency_level#}}\n当前渠道：{{#1775752030903.channel#}}\n当前页面编码：{{#1775752030903.page_code#}}\n当前页面上下文：{{#1775752030903.page_context#}}\n输入模式：{{#1775752030903.input_mode#}}\n\n请基于上述信息回答。"
+          }
+        ]
+      },
+      "type": "custom",
+      "width": 260,
+      "height": 150,
+      "position": {
+        "x": 1120,
+        "y": 590
+      },
+      "selected": false,
+      "sourcePosition": "right",
+      "targetPosition": "left",
+      "positionAbsolute": {
+        "x": 1120,
+        "y": 590
+      }
+    },
+    {
+      "id": "202606300305",
+      "data": {
+        "desc": "处理转人工、工单创建、客服分配、飞书通知、客服回复和评价服务。",
+        "type": "llm",
+        "model": {
+          "mode": "chat",
+          "name": "deepseek-v4-flash",
+          "provider": "langgenius/deepseek/deepseek",
+          "completion_params": {
+            "temperature": 0.2,
+            "max_tokens": 1024,
+            "top_p": 0.8
+          }
+        },
+        "title": "人工客服工单 LLM",
+        "vision": {
+          "enabled": false
+        },
+        "context": {
+          "enabled": false,
+          "variable_selector": []
+        },
+        "selected": false,
+        "prompt_template": [
+          {
+            "id": "5d27c5d8-91e1-443d-a5e9-bcd9516f18a2",
+            "role": "system",
+            "text": "你是来伊份共创平台 AI 客服助手“小伊”。\n回答必须使用中文，语气专业、简洁、客服式。\n先给结论，再给操作步骤或需要补充的信息。\n不要编造后台状态、审核结果、付款结果、手机号、合同号、门店信息、订单信息或接口返回。\n涉及真实业务数据、状态、审批、导出或提交动作时，必须说明需要通过后端权限校验或转人工核验。\n人工客服服务时间为周一至周五 09:00-18:00。\n转人工后不跳转页面，人工客服后台回复会回到当前对话。\n工单转派只能由客服后台操作，用户端不提供转派入口。\n不要使用 emoji，不要输出 Markdown 表格。\n\n你负责人工客服和工单类问题。\n用户要求转人工时，回复“已接入人工服务，当前对话继续，不跳转”。\n明确人工客服服务时间：周一至周五 09:00-18:00。\n非服务时间提示用户可先提交工单，服务时间内客服会继续回复。\n不要在用户端提供“转派客服”入口；转派只能由客服后台操作。"
+          },
+          {
+            "id": "8a363447-43de-40f8-95bb-90d9b0e2b352",
+            "role": "user",
+            "text": "以下是用户的完整输入信息：\n联系人姓名：{{#1775752030903.customer_name#}}\n问题：{{#1775752030903.customer_issue#}}\n系统初判问题类型：{{#1775752030903.issue_type#}}\n客户类型：{{#1775752030903.customer_identity#}}\n联系人电话：{{#1775752030903.contact_phone#}}\n订单/合同/工单编号：{{#1775752030903.case_reference#}}\n紧急程度：{{#1775752030903.urgency_level#}}\n当前渠道：{{#1775752030903.channel#}}\n当前页面编码：{{#1775752030903.page_code#}}\n当前页面上下文：{{#1775752030903.page_context#}}\n输入模式：{{#1775752030903.input_mode#}}\n\n请基于上述信息回答。"
+          }
+        ]
+      },
+      "type": "custom",
+      "width": 260,
+      "height": 130,
+      "position": {
+        "x": 1120,
+        "y": 780
+      },
+      "selected": false,
+      "sourcePosition": "right",
+      "targetPosition": "left",
+      "positionAbsolute": {
+        "x": 1120,
+        "y": 780
+      }
+    },
+    {
+      "id": "202606300306",
+      "data": {
+        "desc": "处理待办、节点通知、业务进度、商机提醒、指标预警和主动推送。",
+        "type": "llm",
+        "model": {
+          "mode": "chat",
+          "name": "deepseek-v4-flash",
+          "provider": "langgenius/deepseek/deepseek",
+          "completion_params": {
+            "temperature": 0.2,
+            "max_tokens": 1024,
+            "top_p": 0.8
+          }
+        },
+        "title": "主动服务 LLM",
+        "vision": {
+          "enabled": false
+        },
+        "context": {
+          "enabled": false,
+          "variable_selector": []
+        },
+        "selected": false,
+        "prompt_template": [
+          {
+            "id": "665c2c4e-e6bd-48ab-aad2-94c47e1e3346",
+            "role": "system",
+            "text": "你是来伊份共创平台 AI 客服助手“小伊”。\n回答必须使用中文，语气专业、简洁、客服式。\n先给结论，再给操作步骤或需要补充的信息。\n不要编造后台状态、审核结果、付款结果、手机号、合同号、门店信息、订单信息或接口返回。\n涉及真实业务数据、状态、审批、导出或提交动作时，必须说明需要通过后端权限校验或转人工核验。\n人工客服服务时间为周一至周五 09:00-18:00。\n转人工后不跳转页面，人工客服后台回复会回到当前对话。\n工单转派只能由客服后台操作，用户端不提供转派入口。\n不要使用 emoji，不要输出 Markdown 表格。\n\n你负责主动服务类问题。\n围绕今日待办、入驻后下一步、商机报名后补充资料、合同订单结算节点、指标预警给出简短提醒和快捷入口建议。\n不要编造待办数量或业务状态；真实状态需要后端事件或数据接口返回。"
+          },
+          {
+            "id": "bed7befe-de6d-4cb7-bda5-d55af97e2e83",
+            "role": "user",
+            "text": "以下是用户的完整输入信息：\n联系人姓名：{{#1775752030903.customer_name#}}\n问题：{{#1775752030903.customer_issue#}}\n系统初判问题类型：{{#1775752030903.issue_type#}}\n客户类型：{{#1775752030903.customer_identity#}}\n联系人电话：{{#1775752030903.contact_phone#}}\n订单/合同/工单编号：{{#1775752030903.case_reference#}}\n紧急程度：{{#1775752030903.urgency_level#}}\n当前渠道：{{#1775752030903.channel#}}\n当前页面编码：{{#1775752030903.page_code#}}\n当前页面上下文：{{#1775752030903.page_context#}}\n输入模式：{{#1775752030903.input_mode#}}\n\n请基于上述信息回答。"
+          }
+        ]
+      },
+      "type": "custom",
+      "width": 260,
+      "height": 130,
+      "position": {
+        "x": 1120,
+        "y": 960
+      },
+      "selected": false,
+      "sourcePosition": "right",
+      "targetPosition": "left",
+      "positionAbsolute": {
+        "x": 1120,
+        "y": 960
+      }
+    },
+    {
+      "id": "202606300307",
+      "data": {
+        "desc": "处理无法归类、信息不足或超出业务范围的问题。",
+        "type": "llm",
+        "model": {
+          "mode": "chat",
+          "name": "deepseek-v4-flash",
+          "provider": "langgenius/deepseek/deepseek",
+          "completion_params": {
+            "temperature": 0.2,
+            "max_tokens": 1024,
+            "top_p": 0.8
+          }
+        },
+        "title": "兜底追问 LLM",
+        "vision": {
+          "enabled": false
+        },
+        "context": {
+          "enabled": false,
+          "variable_selector": []
+        },
+        "selected": false,
+        "prompt_template": [
+          {
+            "id": "6f02cbd9-f927-40ff-9cea-4de7d3d7feee",
+            "role": "system",
+            "text": "你是来伊份共创平台 AI 客服助手“小伊”。\n回答必须使用中文，语气专业、简洁、客服式。\n先给结论，再给操作步骤或需要补充的信息。\n不要编造后台状态、审核结果、付款结果、手机号、合同号、门店信息、订单信息或接口返回。\n涉及真实业务数据、状态、审批、导出或提交动作时，必须说明需要通过后端权限校验或转人工核验。\n人工客服服务时间为周一至周五 09:00-18:00。\n转人工后不跳转页面，人工客服后台回复会回到当前对话。\n工单转派只能由客服后台操作，用户端不提供转派入口。\n不要使用 emoji，不要输出 Markdown 表格。\n\n你负责兜底追问。\n信息不足时先用 1-3 个问题追问关键字段，例如用户身份、页面、问题现象、订单/合同号。\n如果明显超出共创平台业务范围，应礼貌说明边界，并引导提交工单或转人工。"
+          },
+          {
+            "id": "00ab3cf0-ccc0-4dc9-b104-5c59d3c2f72b",
+            "role": "user",
+            "text": "以下是用户的完整输入信息：\n联系人姓名：{{#1775752030903.customer_name#}}\n问题：{{#1775752030903.customer_issue#}}\n系统初判问题类型：{{#1775752030903.issue_type#}}\n客户类型：{{#1775752030903.customer_identity#}}\n联系人电话：{{#1775752030903.contact_phone#}}\n订单/合同/工单编号：{{#1775752030903.case_reference#}}\n紧急程度：{{#1775752030903.urgency_level#}}\n当前渠道：{{#1775752030903.channel#}}\n当前页面编码：{{#1775752030903.page_code#}}\n当前页面上下文：{{#1775752030903.page_context#}}\n输入模式：{{#1775752030903.input_mode#}}\n\n请基于上述信息回答。"
+          }
+        ]
+      },
+      "type": "custom",
+      "width": 260,
+      "height": 130,
+      "position": {
+        "x": 1120,
+        "y": 1140
+      },
+      "selected": false,
+      "sourcePosition": "right",
+      "targetPosition": "left",
+      "positionAbsolute": {
+        "x": 1120,
+        "y": 1140
+      }
+    },
+    {
+      "id": "1775752183779",
+      "data": {
+        "desc": "返回实际执行分支的最终回复。",
+        "type": "end",
+        "title": "输出",
+        "outputs": [
+          {
+            "variable": "knowledge_answer",
+            "value_type": "string",
+            "value_selector": [
+              "202606300301",
+              "text"
+            ]
+          },
+          {
+            "variable": "data_answer",
+            "value_type": "string",
+            "value_selector": [
+              "202606300302",
+              "text"
+            ]
+          },
+          {
+            "variable": "task_answer",
+            "value_type": "string",
+            "value_selector": [
+              "202606300303",
+              "text"
+            ]
+          },
+          {
+            "variable": "file_answer",
+            "value_type": "string",
+            "value_selector": [
+              "202606300304",
+              "text"
+            ]
+          },
+          {
+            "variable": "support_answer",
+            "value_type": "string",
+            "value_selector": [
+              "202606300305",
+              "text"
+            ]
+          },
+          {
+            "variable": "proactive_answer",
+            "value_type": "string",
+            "value_selector": [
+              "202606300306",
+              "text"
+            ]
+          },
+          {
+            "variable": "fallback_answer",
+            "value_type": "string",
+            "value_selector": [
+              "202606300307",
+              "text"
+            ]
+          }
+        ],
+        "selected": false
+      },
+      "type": "custom",
+      "width": 241,
+      "height": 270,
+      "position": {
+        "x": 1540,
+        "y": 520
+      },
+      "selected": false,
+      "sourcePosition": "right",
+      "targetPosition": "left",
+      "positionAbsolute": {
+        "x": 1540,
+        "y": 520
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "1775752030903-source-1775752097077-target",
+      "data": {
+        "isInLoop": false,
+        "sourceType": "start",
+        "targetType": "question-classifier",
+        "isInIteration": false
+      },
+      "type": "custom",
+      "source": "1775752030903",
+      "target": "1775752097077",
+      "zIndex": 0,
+      "selected": false,
+      "sourceHandle": "source",
+      "targetHandle": "target"
+    },
+    {
+      "id": "1775752097077-1-202606300301-target",
+      "data": {
+        "isInLoop": false,
+        "sourceType": "question-classifier",
+        "targetType": "llm",
+        "isInIteration": false
+      },
+      "type": "custom",
+      "source": "1775752097077",
+      "target": "202606300301",
+      "zIndex": 0,
+      "selected": false,
+      "sourceHandle": "1",
+      "targetHandle": "target"
+    },
+    {
+      "id": "1775752097077-2-202606300301-target",
+      "data": {
+        "isInLoop": false,
+        "sourceType": "question-classifier",
+        "targetType": "llm",
+        "isInIteration": false
+      },
+      "type": "custom",
+      "source": "1775752097077",
+      "target": "202606300301",
+      "zIndex": 0,
+      "selected": false,
+      "sourceHandle": "2",
+      "targetHandle": "target"
+    },
+    {
+      "id": "1775752097077-3-202606300302-target",
+      "data": {
+        "isInLoop": false,
+        "sourceType": "question-classifier",
+        "targetType": "llm",
+        "isInIteration": false
+      },
+      "type": "custom",
+      "source": "1775752097077",
+      "target": "202606300302",
+      "zIndex": 0,
+      "selected": false,
+      "sourceHandle": "3",
+      "targetHandle": "target"
+    },
+    {
+      "id": "1775752097077-4-202606300303-target",
+      "data": {
+        "isInLoop": false,
+        "sourceType": "question-classifier",
+        "targetType": "llm",
+        "isInIteration": false
+      },
+      "type": "custom",
+      "source": "1775752097077",
+      "target": "202606300303",
+      "zIndex": 0,
+      "selected": false,
+      "sourceHandle": "4",
+      "targetHandle": "target"
+    },
+    {
+      "id": "1775752097077-5-202606300304-target",
+      "data": {
+        "isInLoop": false,
+        "sourceType": "question-classifier",
+        "targetType": "llm",
+        "isInIteration": false
+      },
+      "type": "custom",
+      "source": "1775752097077",
+      "target": "202606300304",
+      "zIndex": 0,
+      "selected": false,
+      "sourceHandle": "5",
+      "targetHandle": "target"
+    },
+    {
+      "id": "1775752097077-6-202606300305-target",
+      "data": {
+        "isInLoop": false,
+        "sourceType": "question-classifier",
+        "targetType": "llm",
+        "isInIteration": false
+      },
+      "type": "custom",
+      "source": "1775752097077",
+      "target": "202606300305",
+      "zIndex": 0,
+      "selected": false,
+      "sourceHandle": "6",
+      "targetHandle": "target"
+    },
+    {
+      "id": "1775752097077-7-202606300306-target",
+      "data": {
+        "isInLoop": false,
+        "sourceType": "question-classifier",
+        "targetType": "llm",
+        "isInIteration": false
+      },
+      "type": "custom",
+      "source": "1775752097077",
+      "target": "202606300306",
+      "zIndex": 0,
+      "selected": false,
+      "sourceHandle": "7",
+      "targetHandle": "target"
+    },
+    {
+      "id": "1775752097077-8-202606300304-target",
+      "data": {
+        "isInLoop": false,
+        "sourceType": "question-classifier",
+        "targetType": "llm",
+        "isInIteration": false
+      },
+      "type": "custom",
+      "source": "1775752097077",
+      "target": "202606300304",
+      "zIndex": 0,
+      "selected": false,
+      "sourceHandle": "8",
+      "targetHandle": "target"
+    },
+    {
+      "id": "1775752097077-9-202606300307-target",
+      "data": {
+        "isInLoop": false,
+        "sourceType": "question-classifier",
+        "targetType": "llm",
+        "isInIteration": false
+      },
+      "type": "custom",
+      "source": "1775752097077",
+      "target": "202606300307",
+      "zIndex": 0,
+      "selected": false,
+      "sourceHandle": "9",
+      "targetHandle": "target"
+    },
+    {
+      "id": "202606300301-source-1775752183779-target",
+      "data": {
+        "isInLoop": false,
+        "sourceType": "llm",
+        "targetType": "end",
+        "isInIteration": false
+      },
+      "type": "custom",
+      "source": "202606300301",
+      "target": "1775752183779",
+      "zIndex": 0,
+      "selected": false,
+      "sourceHandle": "source",
+      "targetHandle": "target"
+    },
+    {
+      "id": "202606300302-source-1775752183779-target",
+      "data": {
+        "isInLoop": false,
+        "sourceType": "llm",
+        "targetType": "end",
+        "isInIteration": false
+      },
+      "type": "custom",
+      "source": "202606300302",
+      "target": "1775752183779",
+      "zIndex": 0,
+      "selected": false,
+      "sourceHandle": "source",
+      "targetHandle": "target"
+    },
+    {
+      "id": "202606300303-source-1775752183779-target",
+      "data": {
+        "isInLoop": false,
+        "sourceType": "llm",
+        "targetType": "end",
+        "isInIteration": false
+      },
+      "type": "custom",
+      "source": "202606300303",
+      "target": "1775752183779",
+      "zIndex": 0,
+      "selected": false,
+      "sourceHandle": "source",
+      "targetHandle": "target"
+    },
+    {
+      "id": "202606300304-source-1775752183779-target",
+      "data": {
+        "isInLoop": false,
+        "sourceType": "llm",
+        "targetType": "end",
+        "isInIteration": false
+      },
+      "type": "custom",
+      "source": "202606300304",
+      "target": "1775752183779",
+      "zIndex": 0,
+      "selected": false,
+      "sourceHandle": "source",
+      "targetHandle": "target"
+    },
+    {
+      "id": "202606300305-source-1775752183779-target",
+      "data": {
+        "isInLoop": false,
+        "sourceType": "llm",
+        "targetType": "end",
+        "isInIteration": false
+      },
+      "type": "custom",
+      "source": "202606300305",
+      "target": "1775752183779",
+      "zIndex": 0,
+      "selected": false,
+      "sourceHandle": "source",
+      "targetHandle": "target"
+    },
+    {
+      "id": "202606300306-source-1775752183779-target",
+      "data": {
+        "isInLoop": false,
+        "sourceType": "llm",
+        "targetType": "end",
+        "isInIteration": false
+      },
+      "type": "custom",
+      "source": "202606300306",
+      "target": "1775752183779",
+      "zIndex": 0,
+      "selected": false,
+      "sourceHandle": "source",
+      "targetHandle": "target"
+    },
+    {
+      "id": "202606300307-source-1775752183779-target",
+      "data": {
+        "isInLoop": false,
+        "sourceType": "llm",
+        "targetType": "end",
+        "isInIteration": false
+      },
+      "type": "custom",
+      "source": "202606300307",
+      "target": "1775752183779",
+      "zIndex": 0,
+      "selected": false,
+      "sourceHandle": "source",
+      "targetHandle": "target"
+    }
+  ],
+  "viewport": {
+    "x": -125.71573991698659,
+    "y": 94.33905911603222,
+    "zoom": 0.6143660465720853
+  }
+}
