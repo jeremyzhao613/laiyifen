@@ -5,9 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "concurrently \"npm:dev:api\" \"npm:dev:web\"",
+    "tunnel:front": "npx cloudflared tunnel --url http://127.0.0.1:5173",
+    "tunnel:fast": "concurrently -k \"npm:dev:api\" \"npm:dev:web\" \"npm:tunnel:front\"",
     "dev:api": "node --watch server/index.js",
     "dev:web": "vite --host 0.0.0.0",
     "build": "tsc && vite build",
+    "deploy:cloudflare": "bash scripts/deploy-cloudflare-pages.sh",
     "preview": "vite preview --host 0.0.0.0",
     "start": "node server/index.js"
   },
@@ -28,6 +31,7 @@
   "devDependencies": {
     "@types/react": "^18.3.17",
     "@types/react-dom": "^18.3.5",
-    "playwright": "^1.61.1"
+    "playwright": "^1.61.1",
+    "wrangler": "^4.105.0"
   }
 }

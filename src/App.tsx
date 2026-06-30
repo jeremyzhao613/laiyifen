@@ -34,6 +34,7 @@ import type {
 } from 'react';
 import {
   BootstrapPayload,
+  ChatAction,
   ChatMessage,
   Identity,
   QuickQuestion,
@@ -79,11 +80,200 @@ type TranslationInputConfig = {
   sourceLanguage: LanguageCode;
   targetLanguage: LanguageCode;
 };
+type VoicePermissionState = 'unknown' | 'prompt' | 'granted' | 'denied' | 'unsupported';
+type SpeechRecognitionAlternativeLike = {
+  transcript: string;
+};
+type SpeechRecognitionResultLike = {
+  isFinal: boolean;
+  0: SpeechRecognitionAlternativeLike;
+};
+type SpeechRecognitionEventLike = {
+  resultIndex: number;
+  results: ArrayLike<SpeechRecognitionResultLike>;
+};
+type SpeechRecognitionErrorEventLike = {
+  error: string;
+};
+type SpeechRecognitionLike = {
+  lang: string;
+  continuous: boolean;
+  interimResults: boolean;
+  maxAlternatives: number;
+  onstart: null | (() => void);
+  onend: null | (() => void);
+  onerror: null | ((event: SpeechRecognitionErrorEventLike) => void);
+  onresult: null | ((event: SpeechRecognitionEventLike) => void);
+  start: () => void;
+  stop: () => void;
+  abort: () => void;
+};
+type SpeechRecognitionConstructor = new () => SpeechRecognitionLike;
+type SpeechRecognitionWindow = Window &
+  typeof globalThis & {
+    SpeechRecognition?: SpeechRecognitionConstructor;
+    webkitSpeechRecognition?: SpeechRecognitionConstructor;
+  };
+type NavigateActionLike = Omit<ChatAction, 'type'>;
 
 const identities: Identity[] = ['供应商', '加盟商', '员工', '经销商'];
+const quickQuestionPresets: Record<Identity, Array<{ id: string; title: string; agent: string }>> = {
+  供应商: [
+    { id: 'preset-supplier-1', title: '我这边还有哪些待办没处理？', agent: 'agent-business' },
+    { id: 'preset-supplier-2', title: '合同授权卡在待确认，下一步怎么做？', agent: 'agent-knowledge' },
+    { id: 'preset-supplier-3', title: '供应商资料提交后多久能审核完？', agent: 'agent-knowledge' },
+    { id: 'preset-supplier-4', title: '这个账号为什么看不到结算入口？', agent: 'agent-business' },
+    { id: 'preset-supplier-5', title: '我想补传营业执照，在哪里操作？', agent: 'agent-knowledge' },
+    { id: 'preset-supplier-6', title: 'SAP 编码和主体名称不一致怎么办？', agent: 'agent-business' },
+    { id: 'preset-supplier-7', title: '入驻完成后先做哪三步？', agent: 'agent-knowledge' },
+    { id: 'preset-supplier-8', title: '待办超过 3 天未处理可以找谁？', agent: 'agent-feishu' }
+  ],
+  加盟商: [
+    { id: 'preset-franchise-1', title: '我刚提交加盟资料，下一步做什么？', agent: 'agent-knowledge' },
+    { id: 'preset-franchise-2', title: '今天还有哪些加盟待办没完成？', agent: 'agent-business' },
+    { id: 'preset-franchise-3', title: '商机报名后多久会有人联系我？', agent: 'agent-knowledge' },
+    { id: 'preset-franchise-4', title: '意向城市填错了怎么修改？', agent: 'agent-business' },
+    { id: 'preset-franchise-5', title: '门店审核卡在待确认怎么办？', agent: 'agent-business' },
+    { id: 'preset-franchise-6', title: '培训通知和开店资料在哪里看？', agent: 'agent-knowledge' },
+    { id: 'preset-franchise-7', title: '保证金资料补交入口在哪？', agent: 'agent-business' },
+    { id: 'preset-franchise-8', title: '注册流程能发我一下吗？', agent: 'agent-knowledge' }
+  ],
+  员工: [
+    { id: 'preset-staff-1', title: '今天还有哪些客户待回访？', agent: 'agent-feishu' },
+    { id: 'preset-staff-2', title: '哪几张工单超过一周还没结案？', agent: 'agent-business' },
+    { id: 'preset-staff-3', title: '待审核的待办有哪些？', agent: 'agent-business' },
+    { id: 'preset-staff-4', title: '这个客户应该转给哪个组？', agent: 'agent-feishu' },
+    { id: 'preset-staff-5', title: '账号权限类工单怎么判断优先级？', agent: 'agent-knowledge' },
+    { id: 'preset-staff-6', title: '飞书通知失败的工单有哪些？', agent: 'agent-feishu' },
+    { id: 'preset-staff-7', title: '哪些会话已经接入人工但还没回复？', agent: 'agent-business' },
+    { id: 'preset-staff-8', title: '本周投诉类工单有几单？', agent: 'agent-business' }
+  ],
+  经销商: [
+    { id: 'preset-distributor-1', title: '本周待处理订单有哪些？', agent: 'agent-business' },
+    { id: 'preset-distributor-2', title: '经销商合同授权状态怎么查？', agent: 'agent-knowledge' },
+    { id: 'preset-distributor-3', title: '哪些门店还没完成对账？', agent: 'agent-business' },
+    { id: 'preset-distributor-4', title: '返利申请提交后多久审核？', agent: 'agent-knowledge' },
+    { id: 'preset-distributor-5', title: '库存预警在哪里看？', agent: 'agent-business' },
+    { id: 'preset-distributor-6', title: '渠道价格有变更怎么确认？', agent: 'agent-knowledge' },
+    { id: 'preset-distributor-7', title: '超过一周的待办有哪些？', agent: 'agent-business' },
+    { id: 'preset-distributor-8', title: '账号被停用后怎么恢复？', agent: 'agent-knowledge' }
+  ]
+};
 const visionRequestPattern = /(截图|截屏|图片|照片|相片|界面截图|页面截图|界面|页面|二维码|条码|票据|发票|OCR|ocr|视觉|多模态|识别|看.*(图|张|界面|页面)|这张(图|图片|截图|照片))/;
 const isImageFile = (mime: string) => mime.startsWith('image/');
 const isVisionRequest = (text: string) => visionRequestPattern.test(text);
+const NAV_PLATFORM_BASE_URL = (() => {
+  const envValue =
+    typeof import.meta !== 'undefined' &&
+    import.meta &&
+    (import.meta as unknown as { env?: Record<string, string> }).env &&
+    typeof (import.meta as unknown as { env?: Record<string, string> }).env?.VITE_COLLAB_PLATFORM_BASE_URL === 'string'
+      ? String((import.meta as unknown as { env?: Record<string, string> }).env!.VITE_COLLAB_PLATFORM_BASE_URL)
+      : '';
+  return (envValue || 'https://scm.test.laiyifen.com/webadmin_vue/collaborationPlatform.html')
+    .trim()
+    .replace(/#.*$/, '')
+    .replace(/\/+$/, '');
+})();
+const NAV_PUBLIC_BASE_URL = (() => {
+  const envValue =
+    typeof import.meta !== 'undefined' &&
+    import.meta &&
+    (import.meta as unknown as { env?: Record<string, string> }).env &&
+    typeof (import.meta as unknown as { env?: Record<string, string> }).env?.VITE_COLLAB_PUBLIC_BASE_URL === 'string'
+      ? String((import.meta as unknown as { env?: Record<string, string> }).env!.VITE_COLLAB_PUBLIC_BASE_URL)
+      : '';
+  return (envValue || 'https://www.laiyifen.com').trim().replace(/\/+$/, '');
+})();
+const NAV_PLATFORM_ROUTE_MAP: Record<string, string> = {
+  home: 'home',
+  '/home': 'home',
+  personal: 'personal',
+  '/personal': 'personal',
+  platform: 'home',
+  'platform-home': 'home',
+  'platform-todo': 'personal',
+  'platform-contract': 'templateManage/templateBase',
+  'platform-settlement': 'reconciliation/virify/paymentData',
+  'platform-supplier-profile': 'personal',
+  'platform-account': 'personal',
+  'platform-store-task': 'personal',
+  'platform-distributor-order': 'sales/collageOrder/1',
+  'platform-commodity-summary': 'sales/commoditySummary',
+  'platform-feedback': 'feedback',
+  'platform-phone-change': 'phoneNumberForm',
+  'platform-esign-org': 'electrosignature/basicInfo/elecOrganizationList',
+  'platform-franchise-opportunity': 'bejoiner',
+  'integrity-platform': 'actionNorm',
+  'platform-integrity': 'actionNorm'
+};
+const NAV_PUBLIC_ROUTE_MAP: Record<string, string> = {
+  bejoiner: 'bejoiner',
+  'platform-franchise-opportunity': 'bejoiner',
+  'franchise-public': 'bejoiner',
+  beagency: 'beagency',
+  'agency-public': 'beagency',
+  contact: 'contact',
+  'contact-public': 'contact',
+  company: 'company',
+  'company-public': 'company',
+  brand: 'brand',
+  'brand-public': 'brand'
+};
+const DEFAULT_NAV_PLATFORM_URL = `${NAV_PLATFORM_BASE_URL}#/home`;
+
+function isAbsoluteHttpUrl(value?: string) {
+  return typeof value === 'string' && /^[a-z][a-z0-9+.-]*:\/\//i.test(value.trim());
+}
+
+function normalizeRelativeNavigationTarget(rawTarget?: string) {
+  const target = (rawTarget || '').trim();
+  if (!target) {
+    return DEFAULT_NAV_PLATFORM_URL;
+  }
+  if (isAbsoluteHttpUrl(target)) return target;
+  if (target.startsWith('#/')) {
+    return `${NAV_PLATFORM_BASE_URL}${target}`;
+  }
+  if (target.startsWith('/')) {
+    return `${NAV_PLATFORM_BASE_URL}#/${target.replace(/^\/+/, '')}`;
+  }
+
+  const publicRoute =
+    NAV_PUBLIC_ROUTE_MAP[target] ||
+    NAV_PUBLIC_ROUTE_MAP[target.replace(/^\/+/, '')] ||
+    NAV_PUBLIC_ROUTE_MAP[target.replace(/#\/+/g, '')];
+  if (publicRoute) {
+    return `${NAV_PUBLIC_BASE_URL}/${publicRoute}`;
+  }
+
+  const platformRoute =
+    NAV_PLATFORM_ROUTE_MAP[target] ||
+    NAV_PLATFORM_ROUTE_MAP[target.replace(/^\/+/, '')] ||
+    NAV_PLATFORM_ROUTE_MAP[target.replace(/#\/+/g, '')];
+  if (platformRoute) {
+    return `${NAV_PLATFORM_BASE_URL}#/${platformRoute}`;
+  }
+
+  return `${NAV_PLATFORM_BASE_URL}#/${target.replace(/^\/+/, '')}`;
+}
+
+function resolveNavigateUrl(action?: NavigateActionLike | string) {
+  const target = typeof action === 'string' ? { path: action, label: action, url: '' } : action;
+  const directUrl = target?.url?.trim() || target?.path || '';
+  return normalizeRelativeNavigationTarget(directUrl);
+}
+
+function getSpeechRecognitionConstructor() {
+  if (typeof window === 'undefined') return null;
+  const speechWindow = window as SpeechRecognitionWindow;
+  return speechWindow.SpeechRecognition || speechWindow.webkitSpeechRecognition || null;
+}
+
+function normalizeVoicePermissionState(state?: string): VoicePermissionState {
+  if (state === 'granted' || state === 'denied' || state === 'prompt') return state;
+  return 'unknown';
+}
 
 function clampSize(value: number, min: number, max: number) {
   return max <= min ? max : Math.min(Math.max(value, min), max);
@@ -222,8 +412,27 @@ function getConversationTitleFromMessages(messages: ChatMessage[], fallback = '�
 }
 
 function isInternalCitation(item: { label: string; value: string }) {
+  if (item.label === '模式') return false;
   const normalized = `${item.label} ${item.value}`.toLowerCase();
   return /workflow|dify|处理链路|智能体路由|workflow 输入|trace/.test(normalized);
+}
+
+function buildQuickQuestionPool(identity: Identity, fallbackQuestions: QuickQuestion[]) {
+  const presets = quickQuestionPresets[identity];
+  if (presets.length > 0) {
+    return presets.map((item, index) => ({
+      id: item.id,
+      title: item.title,
+      identity,
+      sort: index + 1,
+      enabled: true,
+      agent: item.agent
+    }));
+  }
+
+  return fallbackQuestions
+    .filter((question) => question.identity === identity && question.enabled)
+    .sort((a, b) => a.sort - b.sort);
 }
 
 function App() {
@@ -318,7 +527,11 @@ function AssistantSurface({
   const [ratingScore, setRatingScore] = useState<RatingScore>(5);
   const [questionOffset, setQuestionOffset] = useState(0);
   const [attachments, setAttachments] = useState<UploadedFile[]>([]);
+  const [previewFile, setPreviewFile] = useState<UploadedFile | null>(null);
   const [inputMode] = useState<InputMode>('text');
+  const [voiceSupported, setVoiceSupported] = useState(() => Boolean(getSpeechRecognitionConstructor()));
+  const [voiceListening, setVoiceListening] = useState(false);
+  const [voicePermissionState, setVoicePermissionState] = useState<VoicePermissionState>('unknown');
   const [translationConfig] = useState<TranslationInputConfig>({
     enabled: false,
     sourceLanguage: 'auto',
@@ -334,6 +547,9 @@ function AssistantSurface({
     }
   ]);
   const fileRef = useRef<HTMLInputElement>(null);
+  const voiceRecognitionRef = useRef<SpeechRecognitionLike | null>(null);
+  const voiceTranscriptRef = useRef('');
+  const voiceInputBaseRef = useRef('');
 
   const clampDimensions = (width: number, height: number) => {
     const { maxWidth, maxHeight, minWidth, minHeight } = getCanvasBounds();
@@ -350,6 +566,46 @@ function AssistantSurface({
     window.addEventListener('resize', syncToViewport);
     return () => window.removeEventListener('resize', syncToViewport);
   }, []);
+
+  useEffect(() => {
+    setVoiceSupported(Boolean(getSpeechRecognitionConstructor()));
+    return () => {
+      voiceRecognitionRef.current?.abort();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.navigator?.permissions?.query) return;
+
+    let active = true;
+    let permissionStatus: PermissionStatus | null = null;
+
+    void window.navigator.permissions
+      .query({ name: 'microphone' as PermissionName })
+      .then((result) => {
+        if (!active) return;
+        permissionStatus = result;
+        setVoicePermissionState(normalizeVoicePermissionState(result.state));
+        result.onchange = () => {
+          setVoicePermissionState(normalizeVoicePermissionState(result.state));
+        };
+      })
+      .catch(() => {
+        if (!active) return;
+        setVoicePermissionState((current) => (current === 'unknown' ? 'prompt' : current));
+      });
+
+    return () => {
+      active = false;
+      if (permissionStatus) {
+        permissionStatus.onchange = null;
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    setQuestionOffset(0);
+  }, [identity]);
 
   const handleResizeStart = (event: ReactPointerEvent<HTMLButtonElement>) => {
     event.preventDefault();
@@ -373,14 +629,14 @@ function AssistantSurface({
     window.addEventListener('pointerup', handleUp);
   };
 
+  const quickQuestionPool = useMemo(() => buildQuickQuestionPool(identity, data.quickQuestions), [data.quickQuestions, identity]);
+  const questionPageSize = size === 'phone' ? 4 : 6;
   const visibleQuestions = useMemo(() => {
-    const filtered = data.quickQuestions
-        .filter((question) => question.identity === identity && question.enabled)
-        .sort((a, b) => a.sort - b.sort);
-    if (filtered.length === 0) return filtered;
-    const offset = questionOffset % filtered.length;
-    return [...filtered.slice(offset), ...filtered.slice(0, offset)];
-  }, [data.quickQuestions, identity, questionOffset]);
+    if (quickQuestionPool.length === 0) return [];
+    const visibleCount = Math.min(questionPageSize, quickQuestionPool.length);
+    const start = (questionOffset * visibleCount) % quickQuestionPool.length;
+    return Array.from({ length: visibleCount }, (_, index) => quickQuestionPool[(start + index) % quickQuestionPool.length]);
+  }, [quickQuestionPool, questionOffset, questionPageSize]);
 
   const currentUser = useMemo(() => {
     const profiles: Record<Identity, CurrentUser> = {
@@ -424,6 +680,7 @@ function AssistantSurface({
 
     return currentConversation ? [currentConversation, ...data.conversationHistories] : data.conversationHistories;
   }, [currentUser.name, data.conversationHistories, identity, manualTicket, messages, sending, transferring, uploading]);
+  const recentHistories = data.conversationHistories;
 
   const removeAttachment = (fileId: string) => {
     setAttachments((current) => current.filter((file) => file.id !== fileId));
@@ -436,9 +693,25 @@ function AssistantSurface({
     setSection(nextSection);
   };
 
+  const pushSystemMessage = (text: string) => {
+    setMessages((current) => [
+      ...current,
+      {
+        id: `system-${Date.now()}`,
+        role: 'system',
+        text,
+        createdAt: new Date().toISOString()
+      }
+    ]);
+  };
+
   const sendText = async (text: string) => {
     const trimmed = text.trim();
     if (!trimmed || sending || uploading) return;
+    if (voiceListening) {
+      voiceRecognitionRef.current?.stop();
+      setVoiceListening(false);
+    }
 
     const needsVision = isVisionRequest(trimmed) || inputMode === 'multimodal';
     const hasImageAttachment = attachments.some((file) => isImageFile(file.mime));
@@ -495,9 +768,9 @@ function AssistantSurface({
             agent: {
               id: 'manual-service',
               name: result.message.sender,
-              owner: '客服后台',
+              owner: '客户接入接口',
               status: 'online',
-              duty: '人工服务回复',
+              duty: '接入客服会话',
               api: '/api/tickets/:id/messages'
             },
             createdAt: result.message.createdAt
@@ -575,7 +848,7 @@ function AssistantSurface({
         {
           id: `ticket-active-${Date.now()}`,
           role: 'system',
-          text: `人工客服已接入当前会话，工单号：${manualTicket.id}。请直接在输入框继续沟通。`,
+          text: `接入客服正在当前会话中处理，工单号：${manualTicket.id}。请直接在输入框继续沟通。`,
           createdAt: new Date().toISOString()
         }
       ]);
@@ -601,14 +874,14 @@ function AssistantSurface({
         {
           id: `ticket-${ticket.id}`,
           role: 'staff',
-          text: `您好，我是${ticket.currentStaff}，已接入人工服务。请在当前对话继续描述问题，客服后台回复会直接出现在这里。工单号：${ticket.id}`,
+          text: `您好，我是${ticket.currentStaff}，当前通过客户接入接口继续为您处理。请在当前对话补充问题或截图，我会直接在这里跟进。工单号：${ticket.id}`,
           source: 'mock',
           agent: {
             id: 'manual-service',
             name: ticket.currentStaff,
-            owner: '客服后台',
+            owner: '客户接入接口',
             status: 'online',
-            duty: '人工服务回复',
+            duty: '接入客服会话',
             api: '/api/tickets/:id/messages'
           },
           createdAt: new Date().toISOString()
@@ -631,18 +904,127 @@ function AssistantSurface({
     }
   };
 
-  const handleVoiceInput = () => {
-    const draft = '请帮我查看当前账号有哪些待办事项';
-    setInput(draft);
-    setMessages((current) => [
-      ...current,
-      {
-        id: `voice-${Date.now()}`,
-        role: 'system',
-        text: `已完成语音转文字：${draft}`,
-        createdAt: new Date().toISOString()
+  const requestMicrophoneAccess = async () => {
+    if (typeof window === 'undefined') {
+      return { ok: false as const, reason: 'unsupported' as const };
+    }
+
+    const mediaDevices = window.navigator?.mediaDevices;
+    if (!mediaDevices?.getUserMedia) {
+      return { ok: true as const, skipped: true as const };
+    }
+
+    try {
+      const stream = await mediaDevices.getUserMedia({ audio: true });
+      stream.getTracks().forEach((track) => track.stop());
+      setVoicePermissionState('granted');
+      return { ok: true as const, skipped: false as const };
+    } catch (error) {
+      const name =
+        typeof error === 'object' && error && 'name' in error
+          ? String((error as { name?: unknown }).name || '')
+          : '';
+
+      if (['NotAllowedError', 'PermissionDeniedError', 'SecurityError'].includes(name)) {
+        setVoicePermissionState('denied');
+        return { ok: false as const, reason: 'denied' as const };
       }
-    ]);
+
+      if (['NotFoundError', 'DevicesNotFoundError'].includes(name)) {
+        return { ok: false as const, reason: 'missing-device' as const };
+      }
+
+      return { ok: false as const, reason: 'unavailable' as const };
+    }
+  };
+
+  const handleVoiceInput = async () => {
+    if (sending || uploading) return;
+
+    if (voiceListening) {
+      voiceRecognitionRef.current?.stop();
+      return;
+    }
+
+    const Recognition = getSpeechRecognitionConstructor();
+    setVoiceSupported(Boolean(Recognition));
+    if (!Recognition) {
+      setVoicePermissionState('unsupported');
+      pushSystemMessage('当前浏览器暂不支持语音输入，请改用键盘输入，或切换到支持语音识别的浏览器。');
+      return;
+    }
+
+    const microphoneAccess = await requestMicrophoneAccess();
+    if (!microphoneAccess.ok) {
+      const messageMap: Record<string, string> = {
+        denied: '麦克风权限已被浏览器拒绝，请先在地址栏或浏览器设置中开启麦克风权限后再试。',
+        'missing-device': '没有检测到可用麦克风，请检查系统输入设备后重试。',
+        unavailable: '当前环境暂时无法访问麦克风，请检查浏览器或系统权限后重试。'
+      };
+      pushSystemMessage(messageMap[microphoneAccess.reason] || '语音输入暂时不可用，请稍后重试。');
+      return;
+    }
+
+    if (!voiceRecognitionRef.current) {
+      const recognition = new Recognition();
+      recognition.lang = 'zh-CN';
+      recognition.continuous = false;
+      recognition.interimResults = true;
+      recognition.maxAlternatives = 1;
+      recognition.onstart = () => {
+        voiceTranscriptRef.current = '';
+        setVoicePermissionState('granted');
+        setVoiceListening(true);
+      };
+      recognition.onresult = (event) => {
+        const transcript = Array.from(event.results)
+          .slice(event.resultIndex)
+          .map((result) => result[0]?.transcript || '')
+          .join('')
+          .trim();
+
+        voiceTranscriptRef.current = transcript;
+
+        if (!transcript) return;
+
+        const base = voiceInputBaseRef.current.trim();
+        const separator = base && !/[，。！？；：、,\s]$/.test(base) ? ' ' : '';
+        setInput(`${base}${separator}${transcript}`.trim());
+      };
+      recognition.onerror = (event) => {
+        setVoiceListening(false);
+        if (event.error === 'aborted') return;
+
+        if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+          setVoicePermissionState('denied');
+        }
+
+        const errorMessageMap: Record<string, string> = {
+          'not-allowed': '麦克风权限未开启，请允许浏览器访问麦克风后再试。',
+          'service-not-allowed': '当前环境不允许使用语音识别服务，请检查浏览器权限设置。',
+          'audio-capture': '没有检测到可用麦克风，请检查系统输入设备。',
+          'no-speech': '没有识别到语音，请靠近麦克风后重试。',
+          network: '语音识别网络异常，请稍后重试。'
+        };
+
+        pushSystemMessage(errorMessageMap[event.error] || '语音输入暂时不可用，请稍后重试。');
+      };
+      recognition.onend = () => {
+        setVoiceListening(false);
+      };
+      voiceRecognitionRef.current = recognition;
+    }
+
+    voiceInputBaseRef.current = input;
+    voiceTranscriptRef.current = '';
+
+    try {
+      voiceRecognitionRef.current.start();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : '语音识别启动失败';
+      setVoiceListening(false);
+      pushSystemMessage(`语音输入启动失败：${message}`);
+    }
   };
 
   const handleRateService = () => {
@@ -670,19 +1052,34 @@ function AssistantSurface({
     ]);
   };
 
-  const handleNavigate = (path = '/home') => {
+  const handleNavigate = (action?: NavigateActionLike | string) => {
+    const target =
+      typeof action === 'string'
+        ? { path: action, label: action, url: '' }
+        : action || { path: 'platform-home', label: '共创平台首页', url: '' };
+    const targetUrl = resolveNavigateUrl(target);
+    if (targetUrl) {
+      const popup = window.open(targetUrl, '_blank', 'noopener,noreferrer');
+      if (popup) {
+        popup.focus();
+      }
+    }
     setMessages((current) => [
       ...current,
       {
         id: `navigate-${Date.now()}`,
         role: 'system',
-        text: `已为你定位相关菜单：${path}。正式接入共创平台后会直接跳转到对应页面。`,
+        text: targetUrl
+          ? `已为你打开：${target.label || target.path || targetUrl}\n${targetUrl}`
+          : `已为你定位相关菜单：${target.path || '/home'}。当前动作尚未配置外部链接。`,
         createdAt: new Date().toISOString()
       }
     ]);
   };
 
   const startNewConversation = () => {
+    voiceRecognitionRef.current?.abort();
+    setVoiceListening(false);
     setSection('chat');
     setSelectedHistoryId('current');
     setSessionId('');
@@ -723,7 +1120,7 @@ function AssistantSurface({
           setSection={handleSectionChange}
           startNewConversation={startNewConversation}
           compact={size === 'phone'}
-          histories={conversationHistories}
+          histories={recentHistories}
           selectedHistoryId={selectedHistoryId}
           setSelectedHistoryId={setSelectedHistoryId}
           currentUser={currentUser}
@@ -747,11 +1144,15 @@ function AssistantSurface({
               handleVoiceInput={handleVoiceInput}
               handleRateService={handleRateService}
               handleNavigate={handleNavigate}
+              onPreviewFile={setPreviewFile}
               fileRef={fileRef}
               size={size}
               serviceHours={data.serviceHours}
               manualTicket={manualTicket}
               removeAttachment={removeAttachment}
+              voiceListening={voiceListening}
+              voiceSupported={voiceSupported}
+              voicePermissionState={voicePermissionState}
             />
           )}
           {section === 'history' && (
@@ -789,6 +1190,7 @@ function AssistantSurface({
           onSubmit={handleRatingSubmit}
         />
       )}
+      {previewFile && <FilePreviewDialog file={previewFile} onClose={() => setPreviewFile(null)} />}
     </section>
   );
 }
@@ -957,11 +1359,15 @@ function ChatWorkspace({
   handleVoiceInput,
   handleRateService,
   handleNavigate,
+  onPreviewFile,
   fileRef,
   size,
   serviceHours,
   manualTicket,
-  removeAttachment
+  removeAttachment,
+  voiceListening,
+  voiceSupported,
+  voicePermissionState
 }: {
   messages: ChatMessage[];
   questions: QuickQuestion[];
@@ -975,14 +1381,18 @@ function ChatWorkspace({
   handleHumanTransfer: () => Promise<void>;
   transferring: boolean;
   handleUpload: (file?: File) => Promise<void>;
-  handleVoiceInput: () => void;
+  handleVoiceInput: () => Promise<void>;
   handleRateService: () => void;
-  handleNavigate: (path?: string) => void;
+  handleNavigate: (action?: NavigateActionLike | string) => void;
+  onPreviewFile: (file: UploadedFile) => void;
   fileRef: RefObject<HTMLInputElement>;
   size: AssistantSize;
   serviceHours: BootstrapPayload['serviceHours'];
   manualTicket: Ticket | null;
   removeAttachment: (fileId: string) => void;
+  voiceListening: boolean;
+  voiceSupported: boolean;
+  voicePermissionState: VoicePermissionState;
 }) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -1028,7 +1438,13 @@ function ChatWorkspace({
 
         <section className="ly-message-stack">
           {messages.slice(1).map((message) => (
-            <MessageBubble key={message.id} message={message} onActionTicket={handleHumanTransfer} onNavigate={handleNavigate} />
+            <MessageBubble
+              key={message.id}
+              message={message}
+              onActionTicket={handleHumanTransfer}
+              onNavigate={handleNavigate}
+              onPreviewFile={onPreviewFile}
+            />
           ))}
           {sending && (
             <div className="ly-message assistant">
@@ -1058,6 +1474,10 @@ function ChatWorkspace({
         uploading={uploading}
         manualTicket={manualTicket}
         removeAttachment={removeAttachment}
+        onPreviewFile={onPreviewFile}
+        voiceListening={voiceListening}
+        voiceSupported={voiceSupported}
+        voicePermissionState={voicePermissionState}
       />
     </div>
   );
@@ -1079,7 +1499,11 @@ function Composer({
   size,
   serviceHours,
   manualTicket,
-  removeAttachment
+  removeAttachment,
+  onPreviewFile,
+  voiceListening,
+  voiceSupported,
+  voicePermissionState
 }: {
   input: string;
   setInput: (value: string) => void;
@@ -1090,20 +1514,33 @@ function Composer({
   handleHumanTransfer: () => Promise<void>;
   transferring: boolean;
   handleUpload: (file?: File) => Promise<void>;
-  handleVoiceInput: () => void;
+  handleVoiceInput: () => Promise<void>;
   handleRateService: () => void;
   fileRef: RefObject<HTMLInputElement>;
   size: AssistantSize;
   serviceHours: BootstrapPayload['serviceHours'];
   manualTicket: Ticket | null;
   removeAttachment: (fileId: string) => void;
+  onPreviewFile: (file: UploadedFile) => void;
+  voiceListening: boolean;
+  voiceSupported: boolean;
+  voicePermissionState: VoicePermissionState;
 }) {
   const [showServiceHours, setShowServiceHours] = useState(false);
+  const voiceHint = voiceListening
+    ? '正在聆听，请开始说话。再次点击麦克风可结束。'
+    : voicePermissionState === 'denied'
+      ? '麦克风权限已关闭，请先在浏览器设置中重新开启。'
+    : !voiceSupported
+      ? '当前浏览器不支持语音输入。'
+      : voicePermissionState === 'prompt' || voicePermissionState === 'unknown'
+        ? '点击麦克风开始语音转文字，首次会请求麦克风权限。'
+      : '点击麦克风可直接语音转文字。';
   const attachmentHint = uploading
     ? '正在上传附件，请稍候。'
     : attachments.length > 0
       ? `已添加 ${attachments.length} 个附件，发送时会与文字一起提交。`
-      : '支持先上传图片、截图或文档，再输入文字问题。';
+      : '';
   const attachmentDetail =
     attachments.length > 0
       ? attachments.some((file) => isImageFile(file.mime))
@@ -1165,8 +1602,20 @@ function Composer({
         {attachments.length > 0 && (
           <div className="ly-attachments" aria-label="待发送附件">
             {attachments.map((file) => (
-              <span key={file.id}>
-                <Paperclip size={12} />
+              <span key={file.id} className={isImageFile(file.mime) ? 'is-image' : ''}>
+                {isImageFile(file.mime) && file.url ? (
+                  <button
+                    type="button"
+                    className="ly-attachment-preview"
+                    onClick={() => onPreviewFile(file)}
+                    aria-label={`预览附件 ${file.originalName}`}
+                    disabled={sending || uploading}
+                  >
+                    <img src={file.url} alt={file.originalName} className="ly-attachment-thumb" />
+                  </button>
+                ) : (
+                  <Paperclip size={12} />
+                )}
                 <strong>{file.originalName}</strong>
                 <button
                   type="button"
@@ -1193,7 +1642,13 @@ function Composer({
             uploading={uploading}
             attachments={attachments}
           />
-          <button className="ly-tool muted" onClick={handleVoiceInput} aria-label="语音输入">
+          <button
+            className={`ly-tool muted${voiceListening ? ' active' : ''}`}
+            onClick={() => void handleVoiceInput()}
+            aria-label={voiceListening ? '停止语音输入' : '语音输入'}
+            disabled={sending || uploading}
+            aria-pressed={voiceListening}
+          >
             <Mic size={18} />
           </button>
           <button className="ly-send" onClick={() => void sendText(input)} disabled={sending || uploading || !input.trim()} aria-label="发送">
@@ -1201,7 +1656,8 @@ function Composer({
           </button>
         </div>
         <div className="ly-input-hint">
-          <span>{attachmentHint}</span>
+          <span>{voiceHint}</span>
+          {attachmentHint && <span>{attachmentHint}</span>}
           {attachmentDetail && <span>{attachmentDetail}</span>}
         </div>
       </div>
@@ -1301,14 +1757,41 @@ function ChatInput({
   );
 }
 
+function FilePreviewDialog({
+  file,
+  onClose
+}: {
+  file: UploadedFile;
+  onClose: () => void;
+}) {
+  return (
+    <div className="ly-preview-overlay" role="dialog" aria-modal="true" aria-labelledby="preview-title">
+      <div className="ly-preview-modal">
+        <div className="ly-preview-head">
+          <div>
+            <strong id="preview-title">{file.originalName}</strong>
+            <span>{Math.max(1, Math.round(file.size / 1024))} KB</span>
+          </div>
+          <button className="ly-preview-close" onClick={onClose} aria-label="关闭图片预览">
+            <X size={16} />
+          </button>
+        </div>
+        {file.url && <img src={file.url} alt={file.originalName} className="ly-preview-image" />}
+      </div>
+    </div>
+  );
+}
+
 function MessageBubble({
   message,
   onActionTicket,
-  onNavigate
+  onNavigate,
+  onPreviewFile
 }: {
   message: ChatMessage;
   onActionTicket: () => Promise<void>;
-  onNavigate: (path?: string) => void;
+  onNavigate: (action?: NavigateActionLike | string) => void;
+  onPreviewFile: (file: UploadedFile) => void;
 }) {
   const trace = message.agentTrace;
   const reasoning = message.reasoning;
@@ -1328,40 +1811,16 @@ function MessageBubble({
             ? '当前需要进一步确认后才能继续处理。'
             : trace.agent4_security.risk_level === 'high'
               ? '当前请求风险较高，系统已采用谨慎处理方式。'
-              : '已完成问题判断，可以继续处理当前请求。',
-          reasoning.evidence.imageCount > 0
-            ? `已结合 ${reasoning.evidence.imageCount} 张图片一起分析。`
-            : reasoning.evidence.attachmentCount > 0
-              ? `已结合 ${reasoning.evidence.attachmentCount} 个附件作为上下文。`
-              : ''
+              : '已完成问题判断，可以继续处理当前请求。'
         ].filter(Boolean)
-      : [];
-  const traceStats =
-    trace && reasoning
-      ? [
-          { label: '类型', value: trace.agent2_intent.category },
-          { label: '优先级', value: message.priority || trace.agent2_intent.priority },
-          { label: '风险', value: trace.agent4_security.risk_level },
-          {
-            label: '状态',
-            value: trace.status === 'blocked' ? '需确认' : trace.agent3_execution.can_execute ? '可处理' : '谨慎处理'
-          },
-          {
-            label: '附件',
-            value:
-              reasoning.evidence.imageCount > 0
-                ? `${reasoning.evidence.imageCount} 张图片`
-                : reasoning.evidence.attachmentCount > 0
-                  ? `${reasoning.evidence.attachmentCount} 个`
-                  : '无'
-          },
-          { label: '置信度', value: `${Math.round((trace.resolution?.confidence || trace.agent2_intent.confidence) * 100)}%` }
-        ]
       : [];
   const traceNotes = [
     reasoning?.evidence.fallbackReason ? `处理说明：${reasoning.evidence.fallbackReason}` : '',
     trace?.agent4_security.reasons.length ? trace.agent4_security.reasons.join('；') : ''
   ].filter(Boolean);
+  const primaryTraceSummary = traceSummary[0] || '';
+  const secondaryTraceSummary = traceSummary[1] || '';
+  const visibleTraceNotes = trace?.status === 'blocked' ? traceNotes.slice(0, 1) : [];
 
   return (
     <div className={`ly-message ${message.role}`}>
@@ -1370,9 +1829,16 @@ function MessageBubble({
         {message.files && message.files.length > 0 && (
           <div className="ly-file-list">
             {message.files.map((file) => (
-              <span key={file.id}>
+              <span key={file.id} className={isImageFile(file.mime) ? 'is-image' : ''}>
                 {file.mime.startsWith('image/') && file.url ? (
-                  <img src={file.url} alt={file.originalName} className="ly-file-image" />
+                  <button
+                    type="button"
+                    className="ly-file-preview"
+                    onClick={() => onPreviewFile(file)}
+                    aria-label={`预览图片 ${file.originalName}`}
+                  >
+                    <img src={file.url} alt={file.originalName} className="ly-file-image" />
+                  </button>
                 ) : (
                   <FileText size={14} />
                 )}
@@ -1394,24 +1860,13 @@ function MessageBubble({
               {trace.status === 'blocked' ? <AlertCircle size={14} /> : <Bot size={14} />}
               <strong>{trace.status === 'blocked' ? '处理确认' : 'AI 处理结果'}</strong>
             </div>
-            {traceSummary.length > 0 && (
-              <div className="ly-reasoning-summary">
-                {traceSummary.map((item) => (
-                  <span key={item}>{item}</span>
-                ))}
+            {(primaryTraceSummary || secondaryTraceSummary) && (
+              <div className="ly-trace-brief">
+                {primaryTraceSummary && <strong>{primaryTraceSummary}</strong>}
+                {secondaryTraceSummary && <span>{secondaryTraceSummary}</span>}
               </div>
             )}
-            {traceStats.length > 0 && (
-              <div className="ly-trace-grid">
-                {traceStats.map((item) => (
-                  <span key={`${item.label}-${item.value}`}>
-                    <em>{item.label}</em>
-                    <b>{item.value}</b>
-                  </span>
-                ))}
-              </div>
-            )}
-            {traceNotes.map((note) => (
+            {visibleTraceNotes.map((note) => (
               <p key={note}>{note}</p>
             ))}
           </div>
@@ -1420,8 +1875,9 @@ function MessageBubble({
           <div className="ly-actions">
             {message.actions.map((action) => (
               <button
-                key={action.label}
-                onClick={action.type === 'ticket' ? () => void onActionTicket() : () => onNavigate(action.path)}
+                key={`${action.label}-${action.path || action.url || action.type}`}
+                title={action.description}
+                onClick={action.type === 'ticket' ? () => void onActionTicket() : () => onNavigate(action)}
               >
                 {action.label}
               </button>
@@ -1661,7 +2117,7 @@ function TicketWorkspace({
   const ticketFileRef = useRef<HTMLInputElement>(null);
   const paneRef = useRef<HTMLDivElement>(null);
 
-  const problemTypes = ['系统功能问题', '业务流程咨询', '账号/权限问题', '供应商入驻', '合同/授权状态', '投诉建议', '其他'];
+  const problemTypes = ['账号权限与登录', '菜单定位与操作引导', '供应商入驻', '合同授权与结算', '加盟商商机与门店运营', '经销商业务问题', '工单与人工客服', '附件图片文件识别', '系统异常与缺陷', '其他问题'];
   const provinceOptions = ['上海市', '江苏省', '浙江省', '安徽省', '广东省'];
   const cityOptions = form.province === '上海市' ? ['上海市'] : ['南京市', '杭州市', '合肥市', '广州市'];
   const districtOptions = form.province === '上海市' ? ['浦东新区', '闵行区', '徐汇区', '黄浦区'] : ['核心城区', '合作片区'];
@@ -1810,7 +2266,7 @@ function TicketWorkspace({
       {ticketNotice && <div className="ly-ticket-notice">{ticketNotice}</div>}
 
       {activeView === 'create' ? (
-        <form className="ly-ticket-form" onSubmit={(event) => void handleCreateTicket(event)}>
+        <form className="ly-ticket-form" onSubmit={(event) => void handleCreateTicket(event)} noValidate>
           <div className="ly-ticket-form-row wide">
             <label>
               <span className="required">问题类型</span>

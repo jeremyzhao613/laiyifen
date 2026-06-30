@@ -1,0 +1,1108 @@
+{
+  "summary": {
+    "generatedAt": "2026-06-30T09:37:01.122Z",
+    "totalPlanned": 32,
+    "totalCompleted": 32,
+    "byStatus": {
+      "OK": 27,
+      "WARN_CONFIRM": 5
+    },
+    "byIdentity": {
+      "供应商": {
+        "total": 8,
+        "statuses": {
+          "OK": 7,
+          "WARN_CONFIRM": 1
+        }
+      },
+      "加盟商": {
+        "total": 8,
+        "statuses": {
+          "WARN_CONFIRM": 2,
+          "OK": 6
+        }
+      },
+      "员工": {
+        "total": 8,
+        "statuses": {
+          "OK": 8
+        }
+      },
+      "经销商": {
+        "total": 8,
+        "statuses": {
+          "OK": 6,
+          "WARN_CONFIRM": 2
+        }
+      }
+    },
+    "bySource": {
+      "deepseek": 8,
+      "dify": 18,
+      "mock": 6
+    },
+    "averageDurationMs": 4077,
+    "maxDurationMs": 39153,
+    "problemRows": [
+      {
+        "index": 3,
+        "identity": "供应商",
+        "title": "供应商资料提交后多久能审核完？",
+        "status": "WARN_CONFIRM",
+        "source": "mock",
+        "category": "任务执行确认",
+        "priority": "P1",
+        "traceIntent": "供应商入驻",
+        "answerPreview": "当前请求已进入安全确认流程（分支：task）。 【任务执行预览】 动作：提交 对象：未知对象 编号：未识别 参数：用户侧已确认参数来自上下文，待确认是否执行。 风险：中高（涉及变更/写入或状态修改） 请补充关键参数：目标对象。 风险等级：medium 确认模板：操作对象=供应商入驻；影响范围=mcp；是否可回滚=通常可回滚 原因：任务执行缺少关键参数 请回复“确认执行”以继续。"
+      },
+      {
+        "index": 9,
+        "identity": "加盟商",
+        "title": "我刚提交加盟资料，下一步做什么？",
+        "status": "WARN_CONFIRM",
+        "source": "mock",
+        "category": "任务执行确认",
+        "priority": "P1",
+        "traceIntent": "加盟商商机与门店运营",
+        "answerPreview": "当前请求已进入安全确认流程（分支：task）。 【任务执行预览】 动作：提交 对象：未知对象 编号：未识别 参数：用户侧已确认参数来自上下文，待确认是否执行。 风险：中高（涉及变更/写入或状态修改） 请补充关键参数：目标对象。 风险等级：medium 确认模板：操作对象=加盟商商机与门店运营；影响范围=mcp；是否可回滚=通常可回滚 原因：任务执行缺少关键参数 请回复“确认执行”以继续。"
+      },
+      {
+        "index": 12,
+        "identity": "加盟商",
+        "title": "意向城市填错了怎么修改？",
+        "status": "WARN_CONFIRM",
+        "source": "mock",
+        "category": "高风险控制",
+        "priority": "P0",
+        "traceIntent": "其他问题",
+        "answerPreview": "当前请求已进入安全确认流程（分支：unknown）。 风险等级：high 确认模板：操作对象=其他问题；影响范围=chat；是否可回滚=可能需人工撤销 原因：识别到高风险意图（变更/外部/导出/跳转相关） 请回复“确认执行”以继续。"
+      },
+      {
+        "index": 28,
+        "identity": "经销商",
+        "title": "返利申请提交后多久审核？",
+        "status": "WARN_CONFIRM",
+        "source": "mock",
+        "category": "任务执行确认",
+        "priority": "P0",
+        "traceIntent": "其他问题",
+        "answerPreview": "当前请求已进入安全确认流程（分支：task）。 【任务执行预览】 动作：提交 对象：申请 编号：未识别 参数：用户侧已确认参数来自上下文，待确认是否执行。 风险：中高（涉及变更/写入或状态修改） 请补充关键参数：操作目标与编号。 风险等级：high 确认模板：操作对象=其他问题；影响范围=chat；是否可回滚=通常可回滚 原因：任务执行缺少关键参数 请回复“确认执行”以继续。"
+      },
+      {
+        "index": 30,
+        "identity": "经销商",
+        "title": "渠道价格有变更怎么确认？",
+        "status": "WARN_CONFIRM",
+        "source": "mock",
+        "category": "高风险控制",
+        "priority": "P0",
+        "traceIntent": "经销商业务问题",
+        "answerPreview": "当前请求已进入安全确认流程（分支：unknown）。 风险等级：high 确认模板：操作对象=经销商业务问题；影响范围=mcp；是否可回滚=通常可回滚 原因：识别到高风险意图（变更/外部/导出/跳转相关） 请回复“确认执行”以继续。"
+      }
+    ]
+  },
+  "results": [
+    {
+      "index": 1,
+      "id": "preset-supplier-1",
+      "identity": "供应商",
+      "sort": 1,
+      "title": "我这边还有哪些待办没处理？",
+      "agentPreset": "agent-business",
+      "sessionId": "session-mr0gad21-s2tzm",
+      "httpOk": true,
+      "httpStatus": 200,
+      "attempts": 1,
+      "durationMs": 2802,
+      "status": "OK",
+      "source": "deepseek",
+      "category": "供应商入驻",
+      "priority": "P1",
+      "agent": "DeepSeek 客服助手",
+      "pendingTicket": false,
+      "actions": [
+        "打开今日待办",
+        "转人工客服"
+      ],
+      "citations": [
+        "模型: deepseek-v4-flash",
+        "数据来源: 原站业务接口（openapi/ai-openapi），不是浏览器直连数据库"
+      ],
+      "traceStatus": "approved",
+      "traceIntent": "业务查询",
+      "traceRisk": "medium",
+      "answerLength": 190,
+      "answer": "您好，根据您当前的身份和查询结果，系统未找到可读数据。建议您检查以下可能原因：\n\n1. 确认今日待办模块是否已正确加载，可尝试刷新页面或重新登录。\n2. 若您刚完成入驻或授权，数据同步可能存在延迟，请稍后重试。\n3. 如需查看历史数据或具体业务记录，请提交工单或在工作时间（周一至周五 09:00-18:00）联系人工客服。\n\n如问题持续，请提供更多业务场景描述，以便进一步排查。"
+    },
+    {
+      "index": 2,
+      "id": "preset-supplier-2",
+      "identity": "供应商",
+      "sort": 2,
+      "title": "合同授权卡在待确认，下一步怎么做？",
+      "agentPreset": "agent-knowledge",
+      "sessionId": "session-mr0gaf8b-4u3e2",
+      "httpOk": true,
+      "httpStatus": 200,
+      "attempts": 1,
+      "durationMs": 2803,
+      "status": "OK",
+      "source": "dify",
+      "category": "账号权限与登录",
+      "priority": "P1",
+      "agent": "智能客服分流助手 Workflow",
+      "pendingTicket": false,
+      "actions": [
+        "打开合同授权页面",
+        "生成客服工单"
+      ],
+      "citations": [
+        "智能客服分流助手 Workflow: bd92d42f-8753-4e82-b56f-55416874c78a",
+        "Workflow 输入: customer_issue"
+      ],
+      "traceStatus": "approved",
+      "traceIntent": "合同授权与结算",
+      "traceRisk": "medium",
+      "answerLength": 151,
+      "answer": "合同授权卡待确认时，供应商可按以下步骤操作：1.登录共创平台，进入【合同管理】模块。2.在合同列表中找到待确认的授权卡，点击查看详情。3.核对信息无误后，点击“提交确认”按钮。如未看到相关入口或操作异常，请检查是否已完成入驻流程并拥有相应权限。若仍无法解决，建议通过今日待办事项或联系人工客服协助核验。"
+    },
+    {
+      "index": 3,
+      "id": "preset-supplier-3",
+      "identity": "供应商",
+      "sort": 3,
+      "title": "供应商资料提交后多久能审核完？",
+      "agentPreset": "agent-knowledge",
+      "sessionId": "session-mr0gahea-g8zw1",
+      "httpOk": true,
+      "httpStatus": 200,
+      "attempts": 1,
+      "durationMs": 226,
+      "status": "WARN_CONFIRM",
+      "source": "mock",
+      "category": "任务执行确认",
+      "priority": "P1",
+      "agent": "意图路由 Agent",
+      "pendingTicket": false,
+      "actions": [],
+      "citations": [
+        "处理链路: trace-mr0gahed-9e948"
+      ],
+      "traceStatus": "blocked",
+      "traceIntent": "供应商入驻",
+      "traceRisk": "medium",
+      "answerLength": 195,
+      "answer": "当前请求已进入安全确认流程（分支：task）。\n\n【任务执行预览】\n动作：提交\n对象：未知对象\n编号：未识别\n参数：用户侧已确认参数来自上下文，待确认是否执行。\n风险：中高（涉及变更/写入或状态修改）\n\n请补充关键参数：目标对象。\n\n风险等级：medium\n确认模板：操作对象=供应商入驻；影响范围=mcp；是否可回滚=通常可回滚\n\n原因：任务执行缺少关键参数\n\n请回复“确认执行”以继续。"
+    },
+    {
+      "index": 4,
+      "id": "preset-supplier-4",
+      "identity": "供应商",
+      "sort": 4,
+      "title": "这个账号为什么看不到结算入口？",
+      "agentPreset": "agent-business",
+      "sessionId": "session-mr0gahks-p8jhy",
+      "httpOk": true,
+      "httpStatus": 200,
+      "attempts": 1,
+      "durationMs": 2973,
+      "status": "OK",
+      "source": "dify",
+      "category": "账号权限与登录",
+      "priority": "P1",
+      "agent": "智能客服分流助手 Workflow",
+      "pendingTicket": false,
+      "actions": [
+        "打开结算页面",
+        "生成客服工单"
+      ],
+      "citations": [
+        "智能客服分流助手 Workflow: 6270beff-fb0d-46f1-a89d-7c380a46245a",
+        "Workflow 输入: customer_issue"
+      ],
+      "traceStatus": "approved",
+      "traceIntent": "账号权限与登录",
+      "traceRisk": "medium",
+      "answerLength": 230,
+      "answer": "您好，供应商账号看不到结算入口可能与权限设置或流程未完成有关。以下是常见排查步骤：1.确认登录身份：请确保当前登录的是供应商主账号，而非员工或经销商账号。2.检查权限：结算入口通常需要供应商完成入驻及合同签署流程。请通过“合同管理”页面查看是否有待处理的合同或授权任务。3.核验流程状态：若合同已签署但仍未显示结算入口，请联系人工客服（服务时间：周一至周五09:00-18:00）进行核验。如以上步骤无法解决问题，建议您提供订单/合同编号，以便进一步协助排查。"
+    },
+    {
+      "index": 5,
+      "id": "preset-supplier-5",
+      "identity": "供应商",
+      "sort": 5,
+      "title": "我想补传营业执照，在哪里操作？",
+      "agentPreset": "agent-knowledge",
+      "sessionId": "session-mr0gajvp-t7ufx",
+      "httpOk": true,
+      "httpStatus": 200,
+      "attempts": 1,
+      "durationMs": 39153,
+      "status": "OK",
+      "source": "dify",
+      "category": "账号权限与登录",
+      "priority": "P1",
+      "agent": "智能客服分流助手 Workflow",
+      "pendingTicket": false,
+      "actions": [
+        "打开供应商资料页",
+        "生成客服工单"
+      ],
+      "citations": [
+        "智能客服分流助手 Workflow: 78d9d823-079b-4c04-85d4-3c05c7d0886d",
+        "Workflow 输入: customer_issue"
+      ],
+      "traceStatus": "approved",
+      "traceIntent": "菜单定位与操作引导",
+      "traceRisk": "medium",
+      "answerLength": 235,
+      "answer": "您好，供应商用户，您可以通过以下步骤补传营业执照：1.登录共创平台，进入“我的”页面。2.在“我的”页面中找到“合同管理”模块。3.点击“合同管理”，选择需要补传营业执照的合同。4.在合同详情页中，找到“补充材料”或“附件上传”选项，点击上传营业执照。如果在上述路径中看不到相关入口，可能是权限问题或流程未完成。建议您通过“今日待办”确认是否有未完成的步骤，或联系人工客服进一步核实。人工客服服务时间为周一至周五09:00-18:00，您可以通过当前对话框转接人工客服。"
+    },
+    {
+      "index": 6,
+      "id": "preset-supplier-6",
+      "identity": "供应商",
+      "sort": 6,
+      "title": "SAP 编码和主体名称不一致怎么办？",
+      "agentPreset": "agent-business",
+      "sessionId": "session-mr0gbe3d-m909c",
+      "httpOk": true,
+      "httpStatus": 200,
+      "attempts": 1,
+      "durationMs": 3487,
+      "status": "OK",
+      "source": "dify",
+      "category": "账号权限与登录",
+      "priority": "P1",
+      "agent": "智能客服分流助手 Workflow",
+      "pendingTicket": false,
+      "actions": [
+        "打开供应商资料页",
+        "生成客服工单"
+      ],
+      "citations": [
+        "智能客服分流助手 Workflow: 686a155f-307c-4f7a-9fef-dccb1ba50e75",
+        "Workflow 输入: customer_issue"
+      ],
+      "traceStatus": "approved",
+      "traceIntent": "其他问题",
+      "traceRisk": "high",
+      "answerLength": 229,
+      "answer": "您好，针对SAP编码和主体名称不一致的问题，建议您先确认以下信息：1.检查SAP编码是否正确：登录SAP系统，核对编码是否与供应商档案中的信息一致。2.联系来伊份内部对接人：如编码无误但名称仍不一致，请联系您的专属对接人或通过共创平台提交工单，说明具体情况以便核实调整。若涉及权限问题（如无法查看相关数据），请确认是否已完成供应商入驻流程并获得相应权限。如需进一步协助，请提供订单/合同编号或联系人工客服。人工客服服务时间为周一至周五09:00-18:00。"
+    },
+    {
+      "index": 7,
+      "id": "preset-supplier-7",
+      "identity": "供应商",
+      "sort": 7,
+      "title": "入驻完成后先做哪三步？",
+      "agentPreset": "agent-knowledge",
+      "sessionId": "session-mr0gbgsb-ku6q1",
+      "httpOk": true,
+      "httpStatus": 200,
+      "attempts": 1,
+      "durationMs": 3786,
+      "status": "OK",
+      "source": "dify",
+      "category": "账号权限与登录",
+      "priority": "P1",
+      "agent": "智能客服分流助手 Workflow",
+      "pendingTicket": false,
+      "actions": [
+        "打开供应商资料页",
+        "生成客服工单"
+      ],
+      "citations": [
+        "智能客服分流助手 Workflow: 83f458d6-bb92-4927-a283-d286d07fb395",
+        "Workflow 输入: customer_issue"
+      ],
+      "traceStatus": "approved",
+      "traceIntent": "供应商入驻",
+      "traceRisk": "medium",
+      "answerLength": 238,
+      "answer": "供应商入驻完成后，建议先完成以下三步：1.完善企业信息：登录共创平台后，进入“我的资料”页面，补充并确认企业基本信息、资质文件等，确保信息完整且符合平台要求。2.查看合同管理：在“合同管理”模块中，确认已签订的合同状态及条款，如有需要补充或修改的内容，及时提交申请。3.关注今日待办事项：通过“今日待办”功能，查看是否有未完成的任务（如资质审核、合同签署等），按提示完成相应操作。如果上述入口无法查看，请确认是否已完成相关流程或权限设置。如有疑问，建议联系人工客服进一步核实。"
+    },
+    {
+      "index": 8,
+      "id": "preset-supplier-8",
+      "identity": "供应商",
+      "sort": 8,
+      "title": "待办超过 3 天未处理可以找谁？",
+      "agentPreset": "agent-feishu",
+      "sessionId": "session-mr0gbjpk-g47ir",
+      "httpOk": true,
+      "httpStatus": 200,
+      "attempts": 1,
+      "durationMs": 2220,
+      "status": "OK",
+      "source": "deepseek",
+      "category": "供应商入驻",
+      "priority": "P1",
+      "agent": "DeepSeek 客服助手",
+      "pendingTicket": false,
+      "actions": [
+        "打开今日待办",
+        "转人工客服"
+      ],
+      "citations": [
+        "模型: deepseek-v4-flash",
+        "数据来源: 原站业务接口（openapi/ai-openapi），不是浏览器直连数据库"
+      ],
+      "traceStatus": "approved",
+      "traceIntent": "业务查询",
+      "traceRisk": "medium",
+      "answerLength": 99,
+      "answer": "您好，根据您当前的供应商账号查询，今日待办中暂无需要您处理的业务事项。建议您定期刷新页面，或前往“合同授权”、“账号权限”等模块确认是否有待办更新。如有其他问题，可提交工单或在工作时间联系人工客服。"
+    },
+    {
+      "index": 9,
+      "id": "preset-franchise-1",
+      "identity": "加盟商",
+      "sort": 1,
+      "title": "我刚提交加盟资料，下一步做什么？",
+      "agentPreset": "agent-knowledge",
+      "sessionId": "session-mr0gblfm-gpye5",
+      "httpOk": true,
+      "httpStatus": 200,
+      "attempts": 1,
+      "durationMs": 27,
+      "status": "WARN_CONFIRM",
+      "source": "mock",
+      "category": "任务执行确认",
+      "priority": "P1",
+      "agent": "意图路由 Agent",
+      "pendingTicket": false,
+      "actions": [],
+      "citations": [
+        "处理链路: trace-mr0gblfo-zqdfj"
+      ],
+      "traceStatus": "blocked",
+      "traceIntent": "加盟商商机与门店运营",
+      "traceRisk": "medium",
+      "answerLength": 200,
+      "answer": "当前请求已进入安全确认流程（分支：task）。\n\n【任务执行预览】\n动作：提交\n对象：未知对象\n编号：未识别\n参数：用户侧已确认参数来自上下文，待确认是否执行。\n风险：中高（涉及变更/写入或状态修改）\n\n请补充关键参数：目标对象。\n\n风险等级：medium\n确认模板：操作对象=加盟商商机与门店运营；影响范围=mcp；是否可回滚=通常可回滚\n\n原因：任务执行缺少关键参数\n\n请回复“确认执行”以继续。"
+    },
+    {
+      "index": 10,
+      "id": "preset-franchise-2",
+      "identity": "加盟商",
+      "sort": 2,
+      "title": "今天还有哪些加盟待办没完成？",
+      "agentPreset": "agent-business",
+      "sessionId": "session-mr0gblgf-5ccgy",
+      "httpOk": true,
+      "httpStatus": 200,
+      "attempts": 1,
+      "durationMs": 1414,
+      "status": "OK",
+      "source": "deepseek",
+      "category": "加盟商商机与门店运营",
+      "priority": "P1",
+      "agent": "DeepSeek 客服助手",
+      "pendingTicket": false,
+      "actions": [
+        "打开今日待办",
+        "转人工客服"
+      ],
+      "citations": [
+        "模型: deepseek-v4-flash",
+        "数据来源: 原站业务接口（openapi/ai-openapi），不是浏览器直连数据库"
+      ],
+      "traceStatus": "approved",
+      "traceIntent": "业务查询",
+      "traceRisk": "medium",
+      "answerLength": 69,
+      "answer": "您好，根据您当前的身份和查询条件，系统暂未返回可读数据。建议您检查筛选条件或稍后重试。如需进一步帮助，可提交工单或在工作时间联系人工客服。"
+    },
+    {
+      "index": 11,
+      "id": "preset-franchise-3",
+      "identity": "加盟商",
+      "sort": 3,
+      "title": "商机报名后多久会有人联系我？",
+      "agentPreset": "agent-knowledge",
+      "sessionId": "session-mr0gbmjr-fpw1y",
+      "httpOk": true,
+      "httpStatus": 200,
+      "attempts": 1,
+      "durationMs": 3063,
+      "status": "OK",
+      "source": "dify",
+      "category": "账号权限与登录",
+      "priority": "P1",
+      "agent": "智能客服分流助手 Workflow",
+      "pendingTicket": false,
+      "actions": [
+        "打开商机报名页",
+        "生成客服工单"
+      ],
+      "citations": [
+        "智能客服分流助手 Workflow: 588a34a6-356b-41fc-a30c-3836e785ab05",
+        "Workflow 输入: customer_issue"
+      ],
+      "traceStatus": "approved",
+      "traceIntent": "加盟商商机与门店运营",
+      "traceRisk": "medium",
+      "answerLength": 130,
+      "answer": "商机报名后，通常会在1-3个工作日内有工作人员与您联系。具体时间可能会根据报名人数和审核进度有所调整。如果您希望加快联系速度，建议您保持电话畅通，并留意后续的短信或邮件通知。如有其他问题，欢迎随时联系我们的人工客服，服务时间为周一至周五09:00-18:00。"
+    },
+    {
+      "index": 12,
+      "id": "preset-franchise-4",
+      "identity": "加盟商",
+      "sort": 4,
+      "title": "意向城市填错了怎么修改？",
+      "agentPreset": "agent-business",
+      "sessionId": "session-mr0gbowz-yppx1",
+      "httpOk": true,
+      "httpStatus": 200,
+      "attempts": 1,
+      "durationMs": 1,
+      "status": "WARN_CONFIRM",
+      "source": "mock",
+      "category": "高风险控制",
+      "priority": "P0",
+      "agent": "意图路由 Agent",
+      "pendingTicket": false,
+      "actions": [],
+      "citations": [
+        "处理链路: trace-mr0gbox1-8tw61"
+      ],
+      "traceStatus": "blocked",
+      "traceIntent": "其他问题",
+      "traceRisk": "high",
+      "answerLength": 119,
+      "answer": "当前请求已进入安全确认流程（分支：unknown）。\n\n风险等级：high\n确认模板：操作对象=其他问题；影响范围=chat；是否可回滚=可能需人工撤销\n\n原因：识别到高风险意图（变更/外部/导出/跳转相关）\n\n请回复“确认执行”以继续。"
+    },
+    {
+      "index": 13,
+      "id": "preset-franchise-5",
+      "identity": "加盟商",
+      "sort": 5,
+      "title": "门店审核卡在待确认怎么办？",
+      "agentPreset": "agent-business",
+      "sessionId": "session-mr0gbox4-bj9mw",
+      "httpOk": true,
+      "httpStatus": 200,
+      "attempts": 1,
+      "durationMs": 3243,
+      "status": "OK",
+      "source": "dify",
+      "category": "账号权限与登录",
+      "priority": "P1",
+      "agent": "智能客服分流助手 Workflow",
+      "pendingTicket": false,
+      "actions": [
+        "打开今日待办",
+        "生成客服工单"
+      ],
+      "citations": [
+        "智能客服分流助手 Workflow: ebdf1c7d-20ab-42ff-ad1f-5db6a3f662a8",
+        "Workflow 输入: customer_issue"
+      ],
+      "traceStatus": "approved",
+      "traceIntent": "加盟商商机与门店运营",
+      "traceRisk": "medium",
+      "answerLength": 180,
+      "answer": "门店审核卡在“待确认”状态，可能是由于信息提交不完整或需要补充材料。以下是操作步骤：1.登录共创平台，进入【门店管理】模块。2.在【门店审核】页面，查看具体审核项和提示信息。3.根据提示补充或修改相关信息，并重新提交。如果仍无法解决，请通过【今日待办】或【合同管理】模块核验当前状态，或联系人工客服（服务时间：周一至周五09:00-18:00）进一步协助处理。"
+    },
+    {
+      "index": 14,
+      "id": "preset-franchise-6",
+      "identity": "加盟商",
+      "sort": 6,
+      "title": "培训通知和开店资料在哪里看？",
+      "agentPreset": "agent-knowledge",
+      "sessionId": "session-mr0gbrfc-atb7y",
+      "httpOk": true,
+      "httpStatus": 200,
+      "attempts": 1,
+      "durationMs": 4402,
+      "status": "OK",
+      "source": "dify",
+      "category": "账号权限与登录",
+      "priority": "P1",
+      "agent": "智能客服分流助手 Workflow",
+      "pendingTicket": false,
+      "actions": [
+        "打开商机报名页",
+        "生成客服工单"
+      ],
+      "citations": [
+        "智能客服分流助手 Workflow: 169639d9-daee-4f46-a3d3-a40b9fb9197e",
+        "Workflow 输入: customer_issue"
+      ],
+      "traceStatus": "approved",
+      "traceIntent": "菜单定位与操作引导",
+      "traceRisk": "medium",
+      "answerLength": 350,
+      "answer": "您好，加盟商伙伴。关于培训通知和开店资料的查看路径，我为您说明如下：1.登录共创平台：请使用您的加盟商账号登录来伊份共创平台（https://www.laiyifun.com）。2.常见入口：-登录后，在首页或左侧菜单栏找到“培训中心”或“开店资料”模块。-如果未看到相关入口，请确认是否已完成入驻流程，或是否有权限访问。3.权限与流程：-若您已入驻但看不到入口，可能是权限未开通或流程未完成。建议通过“今日待办”或“合同管理”模块核验状态。-如需进一步确认，请联系人工客服（周一至周五09:00-18:00）或提交工单，由后台核实。4.注意事项：-培训通知和开店资料通常会在入驻后统一发送至您的注册邮箱或平台消息中心。-如需下载或导出资料，请确保账户权限已激活。如有其他疑问，欢迎随时联系人工客服。"
+    },
+    {
+      "index": 15,
+      "id": "preset-franchise-7",
+      "identity": "加盟商",
+      "sort": 7,
+      "title": "保证金资料补交入口在哪？",
+      "agentPreset": "agent-business",
+      "sessionId": "session-mr0gbutp-xkhju",
+      "httpOk": true,
+      "httpStatus": 200,
+      "attempts": 1,
+      "durationMs": 3153,
+      "status": "OK",
+      "source": "dify",
+      "category": "账号权限与登录",
+      "priority": "P1",
+      "agent": "智能客服分流助手 Workflow",
+      "pendingTicket": false,
+      "actions": [
+        "打开商机报名页",
+        "生成客服工单"
+      ],
+      "citations": [
+        "智能客服分流助手 Workflow: aa589f9c-c310-41e1-ba35-26cca3419428",
+        "Workflow 输入: customer_issue"
+      ],
+      "traceStatus": "approved",
+      "traceIntent": "菜单定位与操作引导",
+      "traceRisk": "medium",
+      "answerLength": 158,
+      "answer": "保证金资料补交入口通常位于加盟商后台的“合同管理”模块。以下是操作路径：1.登录加盟商后台。2.在左侧导航栏中找到并点击“合同管理”。3.查看当前合同状态，若需补交保证金资料，相关入口会显示在合同详情页面。如果未看到补交入口，请确认是否已完成合同签署及授权流程。如仍有疑问，建议通过今日待办或联系人工客服进一步核实。"
+    },
+    {
+      "index": 16,
+      "id": "preset-franchise-8",
+      "identity": "加盟商",
+      "sort": 8,
+      "title": "注册流程能发我一下吗？",
+      "agentPreset": "agent-knowledge",
+      "sessionId": "session-mr0gbx9e-0oi7t",
+      "httpOk": true,
+      "httpStatus": 200,
+      "attempts": 1,
+      "durationMs": 5773,
+      "status": "OK",
+      "source": "dify",
+      "category": "账号权限与登录",
+      "priority": "P1",
+      "agent": "智能客服分流助手 Workflow",
+      "pendingTicket": false,
+      "actions": [
+        "打开商机报名页",
+        "生成客服工单"
+      ],
+      "citations": [
+        "智能客服分流助手 Workflow: 8ae292fd-d560-40c7-8714-96105eb77ac3",
+        "Workflow 输入: customer_issue"
+      ],
+      "traceStatus": "approved",
+      "traceIntent": "其他问题",
+      "traceRisk": "high",
+      "answerLength": 227,
+      "answer": "您好，加盟商注册流程如下：1.登录来伊份共创平台（https://www.laiyifen.com）。2.点击页面右上角“注册”按钮。3.选择“加盟商”身份，填写联系人信息、公司信息及资质材料。4.提交后等待平台审核，审核通过后可登录使用。如注册过程中遇到权限问题或看不到相关入口，请确认是否已完成企业入驻流程。建议先查看“今日待办”是否有待处理事项，或联系人工客服核实。人工客服服务时间为周一至周五09:00-18:00，您可通过当前对话转接人工支持。"
+    },
+    {
+      "index": 17,
+      "id": "preset-staff-1",
+      "identity": "员工",
+      "sort": 1,
+      "title": "今天还有哪些客户待回访？",
+      "agentPreset": "agent-feishu",
+      "sessionId": "session-mr0gc1pt-3wc41",
+      "httpOk": true,
+      "httpStatus": 200,
+      "attempts": 1,
+      "durationMs": 3105,
+      "status": "OK",
+      "source": "dify",
+      "category": "账号权限与登录",
+      "priority": "P1",
+      "agent": "智能客服分流助手 Workflow",
+      "pendingTicket": false,
+      "actions": [
+        "打开账号权限页",
+        "生成客服工单"
+      ],
+      "citations": [
+        "智能客服分流助手 Workflow: 1f86b45f-12f7-4669-b112-1db0596bdd85",
+        "Workflow 输入: customer_issue"
+      ],
+      "traceStatus": "approved",
+      "traceIntent": "其他问题",
+      "traceRisk": "high",
+      "answerLength": 139,
+      "answer": "您好，我是小伊。根据您的查询，目前系统未查询到今日待回访客户信息。建议您：1.登录共创平台，进入“客户管理”模块查看待办事项；2.确认是否已完成昨日回访任务；3.如需新增客户回访计划，请在\"客户跟进\"页面创建。如需进一步协助，请联系人工客服（周一至周五09:00-18:00）。"
+    },
+    {
+      "index": 18,
+      "id": "preset-staff-2",
+      "identity": "员工",
+      "sort": 2,
+      "title": "哪几张工单超过一周还没结案？",
+      "agentPreset": "agent-business",
+      "sessionId": "session-mr0gc446-l52pa",
+      "httpOk": true,
+      "httpStatus": 200,
+      "attempts": 1,
+      "durationMs": 2181,
+      "status": "OK",
+      "source": "deepseek",
+      "category": "菜单定位与操作引导",
+      "priority": "P2",
+      "agent": "DeepSeek 客服助手",
+      "pendingTicket": false,
+      "actions": [
+        "打开共创平台首页",
+        "转人工客服"
+      ],
+      "citations": [
+        "模型: deepseek-v4-flash",
+        "数据来源: 原站业务接口（openapi/ai-openapi），不是浏览器直连数据库"
+      ],
+      "traceStatus": "approved",
+      "traceIntent": "其他问题",
+      "traceRisk": "high",
+      "answerLength": 138,
+      "answer": "您好，根据您当前员工身份及查询结果，系统显示“暂无可读数据”。建议您：\n\n1. 检查查询条件是否准确，例如时间范围、业务类型等。\n2. 确认是否有权限查看该数据，如需调整权限，可提交工单或联系人工客服处理。\n3. 如需进一步排查，请提供具体查询场景，我将协助转人工或生成工单。"
+    },
+    {
+      "index": 19,
+      "id": "preset-staff-3",
+      "identity": "员工",
+      "sort": 3,
+      "title": "待审核的待办有哪些？",
+      "agentPreset": "agent-business",
+      "sessionId": "session-mr0gc5su-k202b",
+      "httpOk": true,
+      "httpStatus": 200,
+      "attempts": 1,
+      "durationMs": 2079,
+      "status": "OK",
+      "source": "deepseek",
+      "category": "菜单定位与操作引导",
+      "priority": "P2",
+      "agent": "DeepSeek 客服助手",
+      "pendingTicket": false,
+      "actions": [
+        "打开今日待办",
+        "转人工客服"
+      ],
+      "citations": [
+        "模型: deepseek-v4-flash",
+        "数据来源: 原站业务接口（openapi/ai-openapi），不是浏览器直连数据库"
+      ],
+      "traceStatus": "approved",
+      "traceIntent": "业务查询",
+      "traceRisk": "medium",
+      "answerLength": 121,
+      "answer": "您好，根据您当前员工身份及“今日待办”查询，系统返回结果为“暂无可读数据”。\n\n业务分析：您今日暂无待办事项需要处理。建议您确认是否已查看所有待办分类，或检查筛选条件是否正确。如您预期应有待办但未显示，可尝试刷新页面或提交工单由人工客服核实。"
+    },
+    {
+      "index": 20,
+      "id": "preset-staff-4",
+      "identity": "员工",
+      "sort": 4,
+      "title": "这个客户应该转给哪个组？",
+      "agentPreset": "agent-feishu",
+      "sessionId": "session-mr0gc7eq-zek83",
+      "httpOk": true,
+      "httpStatus": 200,
+      "attempts": 1,
+      "durationMs": 3118,
+      "status": "OK",
+      "source": "dify",
+      "category": "账号权限与登录",
+      "priority": "P1",
+      "agent": "智能客服分流助手 Workflow",
+      "pendingTicket": false,
+      "actions": [
+        "打开账号权限页",
+        "生成客服工单"
+      ],
+      "citations": [
+        "智能客服分流助手 Workflow: abc51e41-0a37-47f6-8784-c57e6f367d85",
+        "Workflow 输入: customer_issue"
+      ],
+      "traceStatus": "approved",
+      "traceIntent": "其他问题",
+      "traceRisk": "high",
+      "answerLength": 157,
+      "answer": "您好，根据您提供的信息，目前无法直接判断该员工客户应转给哪个组。为了更准确地处理您的问题，请补充以下关键信息：1.该员工所属的部门或业务线是什么？2.客户的具体问题或需求是什么？3.是否有相关的订单、合同或工单编号可以提供？补充以上信息后，我将协助您进行更精准的判断和处理。如果需要进一步帮助，请随时联系人工客服。"
+    },
+    {
+      "index": 21,
+      "id": "preset-staff-5",
+      "identity": "员工",
+      "sort": 5,
+      "title": "账号权限类工单怎么判断优先级？",
+      "agentPreset": "agent-knowledge",
+      "sessionId": "session-mr0gc9tg-0lp65",
+      "httpOk": true,
+      "httpStatus": 200,
+      "attempts": 1,
+      "durationMs": 5541,
+      "status": "OK",
+      "source": "dify",
+      "category": "账号权限与登录",
+      "priority": "P1",
+      "agent": "智能客服分流助手 Workflow",
+      "pendingTicket": false,
+      "actions": [
+        "打开账号权限页",
+        "生成客服工单"
+      ],
+      "citations": [
+        "智能客服分流助手 Workflow: 186f2e36-ff43-4424-bf31-067c379c70fc",
+        "Workflow 输入: customer_issue"
+      ],
+      "traceStatus": "approved",
+      "traceIntent": "账号权限与登录",
+      "traceRisk": "medium",
+      "answerLength": 446,
+      "answer": "账号权限类工单的优先级判断主要依据问题的紧急程度和影响范围。对于员工角色，中等紧急程度的工单通常按照以下标准进行判断：###优先级判断标准：1.紧急程度：-中等紧急程度的工单（如您描述）需在24小时内处理，确保不影响日常工作。2.影响范围：-若权限问题仅影响单个员工，按常规流程处理。-若涉及多个员工或关键业务模块（如系统登录、合同审批等），则提升为高优先级。3.业务影响：-如果权限问题导致无法完成核心工作（如无法提交合同、无法访问系统），需优先处理。###处理建议：-常规处理：通过“今日待办”或“合同管理”模块确认权限状态，若无异常，可自行解决或提交工单等待处理。-高优先级处理：若问题影响较大，建议立即联系人工客服（服务时间：周一至周五09:00-18:00）以加快处理速度。###注意事项：-权限状态需通过后端校验确认，建议先检查“今日待办”或“合同管理”模块是否有相关提示。-如未看到相关入口，可能是权限未开通或流程未完成，请联系人工客服核实。如有其他疑问，欢迎随时联系人工客服。"
+    },
+    {
+      "index": 22,
+      "id": "preset-staff-6",
+      "identity": "员工",
+      "sort": 6,
+      "title": "飞书通知失败的工单有哪些？",
+      "agentPreset": "agent-feishu",
+      "sessionId": "session-mr0gce3g-2omnq",
+      "httpOk": true,
+      "httpStatus": 200,
+      "attempts": 1,
+      "durationMs": 1638,
+      "status": "OK",
+      "source": "deepseek",
+      "category": "菜单定位与操作引导",
+      "priority": "P2",
+      "agent": "DeepSeek 客服助手",
+      "pendingTicket": false,
+      "actions": [
+        "打开共创平台首页",
+        "转人工客服"
+      ],
+      "citations": [
+        "模型: deepseek-v4-flash",
+        "数据来源: 原站业务接口（openapi/ai-openapi），不是浏览器直连数据库"
+      ],
+      "traceStatus": "approved",
+      "traceIntent": "工单与人工客服",
+      "traceRisk": "medium",
+      "answerLength": 95,
+      "answer": "根据当前查询结果，该员工暂无待办事项或可读业务数据。建议您确认是否已登录正确账号，或检查筛选条件是否设置准确。如需进一步排查，可提交工单或联系人工客服（周一至周五 09:00-18:00）。"
+    },
+    {
+      "index": 23,
+      "id": "preset-staff-7",
+      "identity": "员工",
+      "sort": 7,
+      "title": "哪些会话已经接入人工但还没回复？",
+      "agentPreset": "agent-business",
+      "sessionId": "session-mr0gcfd0-xq3ky",
+      "httpOk": true,
+      "httpStatus": 200,
+      "attempts": 1,
+      "durationMs": 17272,
+      "status": "OK",
+      "source": "dify",
+      "category": "账号权限与登录",
+      "priority": "P1",
+      "agent": "智能客服分流助手 Workflow",
+      "pendingTicket": false,
+      "actions": [
+        "打开账号权限页",
+        "生成客服工单"
+      ],
+      "citations": [
+        "智能客服分流助手 Workflow: 64369b8f-6d50-41a3-a8b8-27356834b295",
+        "Workflow 输入: customer_issue"
+      ],
+      "traceStatus": "approved",
+      "traceIntent": "其他问题",
+      "traceRisk": "high",
+      "answerLength": 165,
+      "answer": "您好，目前系统无法查询哪些会话已经接入人工但尚未回复。建议您通过以下方式跟进：1.登录共创Web后台，查看工单状态。2.如果需要进一步协助，请联系人工客服（服务时间：周一至周五09:00-18:00）。如需转人工服务，请直接点击页面上的“转人工”按钮，当前对话将继续，不会跳转页面。非服务时间可提交工单，服务时间内客服会继续回复。"
+    },
+    {
+      "index": 24,
+      "id": "preset-staff-8",
+      "identity": "员工",
+      "sort": 8,
+      "title": "本周投诉类工单有几单？",
+      "agentPreset": "agent-business",
+      "sessionId": "session-mr0gcsox-2qk10",
+      "httpOk": true,
+      "httpStatus": 200,
+      "attempts": 1,
+      "durationMs": 34,
+      "status": "OK",
+      "source": "mock",
+      "category": "转人工",
+      "priority": "P3",
+      "agent": "AI转人工编排",
+      "pendingTicket": false,
+      "actions": [
+        "查看工单"
+      ],
+      "citations": [
+        "工单编号: TK-20260630-004"
+      ],
+      "traceStatus": "approved",
+      "traceIntent": "其他问题",
+      "traceRisk": "high",
+      "answerLength": 78,
+      "answer": "已触发转人工并生成工单 TK-20260630-004，已推送至飞书。\n\n当前处理人：共创客服-小周，建议在服务端保持上下文继续。\n\n飞书通知状态：已通知。"
+    },
+    {
+      "index": 25,
+      "id": "preset-distributor-1",
+      "identity": "经销商",
+      "sort": 1,
+      "title": "本周待处理订单有哪些？",
+      "agentPreset": "agent-business",
+      "sessionId": "session-mr0gcspx-38mke",
+      "httpOk": true,
+      "httpStatus": 200,
+      "attempts": 1,
+      "durationMs": 1685,
+      "status": "OK",
+      "source": "deepseek",
+      "category": "经销商业务问题",
+      "priority": "P1",
+      "agent": "DeepSeek 客服助手",
+      "pendingTicket": false,
+      "actions": [
+        "打开今日待办",
+        "转人工客服"
+      ],
+      "citations": [
+        "模型: deepseek-v4-flash",
+        "数据来源: 原站业务接口（openapi/ai-openapi），不是浏览器直连数据库"
+      ],
+      "traceStatus": "approved",
+      "traceIntent": "经销商业务问题",
+      "traceRisk": "medium",
+      "answerLength": 84,
+      "answer": "您好，根据您的查询，目前系统中暂未找到与您身份相关的待办事项或业务数据。建议您确认查询条件是否正确，或稍后刷新重试。如需进一步协助，可提交工单或在工作时间联系人工客服。"
+    },
+    {
+      "index": 26,
+      "id": "preset-distributor-2",
+      "identity": "经销商",
+      "sort": 2,
+      "title": "经销商合同授权状态怎么查？",
+      "agentPreset": "agent-knowledge",
+      "sessionId": "session-mr0gcu0z-0o99y",
+      "httpOk": true,
+      "httpStatus": 200,
+      "attempts": 1,
+      "durationMs": 2456,
+      "status": "OK",
+      "source": "dify",
+      "category": "账号权限与登录",
+      "priority": "P1",
+      "agent": "智能客服分流助手 Workflow",
+      "pendingTicket": false,
+      "actions": [
+        "打开合同授权页面",
+        "生成客服工单"
+      ],
+      "citations": [
+        "智能客服分流助手 Workflow: bdfeece2-31a2-44cc-8279-6777a3983019",
+        "Workflow 输入: customer_issue"
+      ],
+      "traceStatus": "approved",
+      "traceIntent": "合同授权与结算",
+      "traceRisk": "medium",
+      "answerLength": 195,
+      "answer": "经销商合同授权状态查询方法如下：1.登录共创Web平台，进入【我的工作台】。2.在左侧菜单栏找到并点击【合同管理】。3.在合同列表中查找您的合同，查看“授权状态”一栏。如果看不到相关入口或状态，请确认：-是否已完成经销商入驻流程；-当前账号是否具备合同管理权限；-合同是否已提交审核。如仍无法查询，建议通过今日待办事项或联系人工客服核实。人工客服服务时间为周一至周五09:00-18:00。"
+    },
+    {
+      "index": 27,
+      "id": "preset-distributor-3",
+      "identity": "经销商",
+      "sort": 3,
+      "title": "哪些门店还没完成对账？",
+      "agentPreset": "agent-business",
+      "sessionId": "session-mr0gcvx9-mq8qj",
+      "httpOk": true,
+      "httpStatus": 200,
+      "attempts": 1,
+      "durationMs": 2868,
+      "status": "OK",
+      "source": "dify",
+      "category": "账号权限与登录",
+      "priority": "P1",
+      "agent": "智能客服分流助手 Workflow",
+      "pendingTicket": false,
+      "actions": [
+        "打开门店待办页",
+        "生成客服工单"
+      ],
+      "citations": [
+        "智能客服分流助手 Workflow: d4dc30c7-c27a-46e8-b85d-8c190c8ca646",
+        "Workflow 输入: customer_issue"
+      ],
+      "traceStatus": "approved",
+      "traceIntent": "加盟商商机与门店运营",
+      "traceRisk": "medium",
+      "answerLength": 223,
+      "answer": "您好，我是来伊份共创平台AI客服助手“小伊”。关于门店对账状态查询，需要通过后端权限校验后才能获取具体数据。建议您：1.登录经销商后台系统，查看“门店管理-对账中心”模块；2.如需批量查询，可提供门店列表或区域范围，我将协助整理查询口径；3.需要导出对账明细时，请确认数据使用权限并提交正式申请。如需进一步协助，请提供具体门店名称或编号，我将为您核验权限后反馈查询结果。人工客服服务时间为周一至周五09:00-18:00，如有紧急需求可随时联系。"
+    },
+    {
+      "index": 28,
+      "id": "preset-distributor-4",
+      "identity": "经销商",
+      "sort": 4,
+      "title": "返利申请提交后多久审核？",
+      "agentPreset": "agent-knowledge",
+      "sessionId": "session-mr0gcy4z-1mbzf",
+      "httpOk": true,
+      "httpStatus": 200,
+      "attempts": 1,
+      "durationMs": 27,
+      "status": "WARN_CONFIRM",
+      "source": "mock",
+      "category": "任务执行确认",
+      "priority": "P0",
+      "agent": "意图路由 Agent",
+      "pendingTicket": false,
+      "actions": [],
+      "citations": [
+        "处理链路: trace-mr0gcy50-2yitw"
+      ],
+      "traceStatus": "blocked",
+      "traceIntent": "其他问题",
+      "traceRisk": "high",
+      "answerLength": 194,
+      "answer": "当前请求已进入安全确认流程（分支：task）。\n\n【任务执行预览】\n动作：提交\n对象：申请\n编号：未识别\n参数：用户侧已确认参数来自上下文，待确认是否执行。\n风险：中高（涉及变更/写入或状态修改）\n\n请补充关键参数：操作目标与编号。\n\n风险等级：high\n确认模板：操作对象=其他问题；影响范围=chat；是否可回滚=通常可回滚\n\n原因：任务执行缺少关键参数\n\n请回复“确认执行”以继续。"
+    },
+    {
+      "index": 29,
+      "id": "preset-distributor-5",
+      "identity": "经销商",
+      "sort": 5,
+      "title": "库存预警在哪里看？",
+      "agentPreset": "agent-business",
+      "sessionId": "session-mr0gcy5s-nisgi",
+      "httpOk": true,
+      "httpStatus": 200,
+      "attempts": 1,
+      "durationMs": 2790,
+      "status": "OK",
+      "source": "dify",
+      "category": "账号权限与登录",
+      "priority": "P1",
+      "agent": "智能客服分流助手 Workflow",
+      "pendingTicket": false,
+      "actions": [
+        "打开订单与对账页",
+        "生成客服工单"
+      ],
+      "citations": [
+        "智能客服分流助手 Workflow: fa0d94fb-d51d-4a55-8dbc-19af0358b81b",
+        "Workflow 输入: customer_issue"
+      ],
+      "traceStatus": "approved",
+      "traceIntent": "菜单定位与操作引导",
+      "traceRisk": "medium",
+      "answerLength": 229,
+      "answer": "库存预警信息需要通过后端系统权限校验后查询，建议您登录经销商专属后台系统查看。具体操作步骤如下：1.登录来伊份经销商专属后台系统（https://dealer.laiyifen.com）。2.进入“库存管理”模块。3.查看“库存预警”或“库存监控”相关报表。如需导出数据或查询更详细的信息，请联系平台管理员申请相应权限。若遇到登录问题或其他技术障碍，可点击页面右下角的“在线客服”按钮，转人工客服协助处理。人工客服服务时间为周一至周五09:00-18:00。"
+    },
+    {
+      "index": 30,
+      "id": "preset-distributor-6",
+      "identity": "经销商",
+      "sort": 6,
+      "title": "渠道价格有变更怎么确认？",
+      "agentPreset": "agent-knowledge",
+      "sessionId": "session-mr0gd0bc-p2ziz",
+      "httpOk": true,
+      "httpStatus": 200,
+      "attempts": 1,
+      "durationMs": 10,
+      "status": "WARN_CONFIRM",
+      "source": "mock",
+      "category": "高风险控制",
+      "priority": "P0",
+      "agent": "意图路由 Agent",
+      "pendingTicket": false,
+      "actions": [],
+      "citations": [
+        "处理链路: trace-mr0gd0bd-8hrd3"
+      ],
+      "traceStatus": "blocked",
+      "traceIntent": "经销商业务问题",
+      "traceRisk": "high",
+      "answerLength": 119,
+      "answer": "当前请求已进入安全确认流程（分支：unknown）。\n\n风险等级：high\n确认模板：操作对象=经销商业务问题；影响范围=mcp；是否可回滚=通常可回滚\n\n原因：识别到高风险意图（变更/外部/导出/跳转相关）\n\n请回复“确认执行”以继续。"
+    },
+    {
+      "index": 31,
+      "id": "preset-distributor-7",
+      "identity": "经销商",
+      "sort": 7,
+      "title": "超过一周的待办有哪些？",
+      "agentPreset": "agent-business",
+      "sessionId": "session-mr0gd0bn-3fc7q",
+      "httpOk": true,
+      "httpStatus": 200,
+      "attempts": 1,
+      "durationMs": 1533,
+      "status": "OK",
+      "source": "deepseek",
+      "category": "经销商业务问题",
+      "priority": "P1",
+      "agent": "DeepSeek 客服助手",
+      "pendingTicket": false,
+      "actions": [
+        "打开今日待办",
+        "转人工客服"
+      ],
+      "citations": [
+        "模型: deepseek-v4-flash",
+        "数据来源: 原站业务接口（openapi/ai-openapi），不是浏览器直连数据库"
+      ],
+      "traceStatus": "approved",
+      "traceIntent": "业务查询",
+      "traceRisk": "medium",
+      "answerLength": 62,
+      "answer": "您好，根据您的查询，当前暂无相关业务数据。建议您检查筛选条件或稍后重试。如需进一步协助，可提交工单或在工作时间联系人工客服。"
+    },
+    {
+      "index": 32,
+      "id": "preset-distributor-8",
+      "identity": "经销商",
+      "sort": 8,
+      "title": "账号被停用后怎么恢复？",
+      "agentPreset": "agent-knowledge",
+      "sessionId": "session-mr0gd1ia-mc9x4",
+      "httpOk": true,
+      "httpStatus": 200,
+      "attempts": 1,
+      "durationMs": 5597,
+      "status": "OK",
+      "source": "dify",
+      "category": "账号权限与登录",
+      "priority": "P0",
+      "agent": "智能客服分流助手 Workflow",
+      "pendingTicket": true,
+      "actions": [
+        "打开订单与对账页",
+        "生成客服工单"
+      ],
+      "citations": [
+        "智能客服分流助手 Workflow: 45f1c6c8-e7fc-4707-b9ac-2bca1cf14a65",
+        "Workflow 输入: customer_issue"
+      ],
+      "traceStatus": "approved",
+      "traceIntent": "账号权限与登录",
+      "traceRisk": "medium",
+      "answerLength": 353,
+      "answer": "账号被停用后恢复的常见操作步骤如下：1.检查停用原因：首先确认账号被停用的具体原因。可能是违反平台规则、未完成实名认证或存在其他异常情况。2.联系人工客服：由于涉及账号权限问题，建议您通过共创Web页面的“在线客服”入口联系人工客服，提供您的账号信息以便核实具体情况。3.提交申诉材料：如果需要申诉，根据客服指引补充相关材料（如身份证明、业务说明等）。4.等待审核结果：提交材料后，需等待后台审核。审核结果将通过系统消息或客服回复告知。注意事项：-若您无法看到相关入口或操作提示，可能是权限不足或流程未完成，请联系人工客服协助。-涉及真实状态核验时，建议通过“今日待办”或“合同管理”模块确认，或直接转人工客服确认。人工客服服务时间为周一至周五09:00-18:00。请确保提供准确的账号信息以便快速处理。"
+    }
+  ]
+}

@@ -25,6 +25,94 @@ npm run dev
 - 前端：http://localhost:5173
 - 后端：http://localhost:8788
 
+### 临时内网穿透（双隧道 + 固定后端 API 地址）
+
+适用于你要把前端发到公网、并强制让前端请求始终走云端后端地址（外网可访问）：
+
+```bash
+# 1) 先启动服务
+npm run dev:api
+
+# 2) 后端开隧道，记下 https://xxxx.trycloudflare.com
+npx cloudflared tunnel --url http://127.0.0.1:8788
+
+# 3) 前端开隧道，并注入 API 基址（可在新终端执行）
+VITE_API_BASE_URL=https://xxxx.trycloudflare.com npm run dev:web
+# 或先导出：export VITE_API_BASE_URL=https://xxxx.trycloudflare.com
+npx cloudflared tunnel --url http://127.0.0.1:5173
+```
+
+说明：
+- 这里 `VITE_API_BASE_URL` 会让前端所有 `/api/*` 与 `/uploads/*` 请求都直连到云端后端隧道。
+- 这是临时隧道（quick tunnel），**每次重启都会变更域名**。你现在这条
+  `https://regulated-discussed-translate-javascript.trycloudflare.com/` 失效时，不是项目坏了，而是这个域名过期/下线了，请直接用新域名重试并更新 `VITE_API_BASE_URL`。
+- 如果你用的是 `npm run tunnel:front`，本地脚本使用的是 `cloudflared`，你也可以改成 `npx cloudflared` 避免全局未安装报错。
+
+### 临时内网穿透（极速模式，单一隧道）
+
+若你更在意速度，可直接走单一隧道：前端隧道暴露 `5173`，并利用 Vite 反向代理把 `/api/*` `/uploads/*` 转发到本机 `8788`。这样不需要再开后端隧道，少一次公网转发，通常更快、更稳定。
+
+```bash
+npm run tunnel:fast
+```
+
+命令会并行启动：
+- `npm run dev:api`（后端 8788）
+- `npm run dev:web`（前端 5173）
+- `npm run tunnel:front`（前端隧道）
+
+运行结束后访问终端输出的新隧道 HTTPS 地址即可。
+
+### 长期稳定建议（推荐）
+
+- 如果你需要固定公网地址，建议使用 Cloudflare 预留隧道（Named Tunnel）或直接走 Cloudflare Pages，不要依赖 quick tunnel 的 `*.trycloudflare.com` 临时域名。
+- quick tunnel 仅用于临时联调；如你想继续用 tunnel 模式，建议同时使用:
+  - 固定二级域名（`--hostname`）
+  - 绑定到同一个 Cloudflare 账号中的自有域名
+
+## Cloudflare 部署
+
+### 一键本地发布（需要 API Token）
+
+```bash
+export CLOUDFLARE_API_TOKEN=你的Token
+export CLOUDFLARE_PAGES_PROJECT=你的Pages项目名   # 例如：dify-assistant
+CLOUDFLARE_PAGES_BRANCH=main ./scripts/deploy-cloudflare-pages.sh
+# 或
+CLOUDFLARE_PAGES_PROJECT=你的Pages项目名 ./scripts/deploy-cloudflare-pages.sh
+```
+
+成功后会输出 `https://<项目名>.pages.dev` 或你在 Pages 配置的自定义域。
+
+Pages Functions 版本的 `/api/chat/message` 已支持直接调用 Dify/DeepSeek。未配置 AI Secret 时会自动降级为线上演示 Mock；配置后线上页面会优先调用 Dify，Dify 不可用时按配置降级 DeepSeek/Mock。
+
+注意：Pages Functions 运行在 Cloudflare 云端，`DIFY_API_URL=http://localhost/v1` 只能用于本机 Node 后端调试，线上必须换成公网可访问的 Dify API 地址，例如 Dify Cloud 或你自托管 Dify 的 HTTPS 域名。否则线上会跳过 Dify，改走 DeepSeek/Mock 兜底。
+
+```bash
+# Dify Workflow 推荐配置
+npx wrangler pages secret put DIFY_API_URL --project-name "$CLOUDFLARE_PAGES_PROJECT"
+npx wrangler pages secret put DIFY_API_KEY --project-name "$CLOUDFLARE_PAGES_PROJECT"
+npx wrangler pages secret put DIFY_APP_MODE --project-name "$CLOUDFLARE_PAGES_PROJECT"          # workflow
+npx wrangler pages secret put DIFY_WORKFLOW_INPUT_KEY --project-name "$CLOUDFLARE_PAGES_PROJECT" # customer_issue
+npx wrangler pages secret put DIFY_WORKFLOW_RESPONSE_MODE --project-name "$CLOUDFLARE_PAGES_PROJECT" # blocking 或 streaming
+
+# 可选：Dify 异常时用 DeepSeek 兜底
+npx wrangler pages secret put DEEPSEEK_API_KEY --project-name "$CLOUDFLARE_PAGES_PROJECT"
+npx wrangler pages secret put DEEPSEEK_MODEL --project-name "$CLOUDFLARE_PAGES_PROJECT"
+```
+
+配置完成后重新部署，访问 `/api/health` 可查看当前线上 AI 模式。
+
+### GitHub Action 自动发布（token 自动化）
+
+推送到 `main` 分支后自动构建并部署到 Pages。需要在仓库 Secrets/Variables 中配置：
+
+- `CLOUDFLARE_API_TOKEN`（建议 scope=Edit Cloudflare Workers，支持 Pages）
+- `CLOUDFLARE_ACCOUNT_ID`（账户 ID）
+- `CLOUDFLARE_PAGES_PROJECT`（Repo Variables，可选）
+
+也可在 Action 中手动 `Run workflow` 触发 `workflow_dispatch`。
+
 ## Dify 接入
 
 复制环境变量模板：
@@ -210,6 +298,8 @@ Workflow 调用链路：
 
 ```bash
 FEISHU_WEBHOOK_URL=https://open.feishu.cn/open-apis/bot/v2/hook/...
+COLLAB_PLATFORM_BASE_URL=https://scm.test.laiyifen.com/webadmin_vue/collaborationPlatform.html
+COLLAB_PLATFORM_PUBLIC_BASE=https://www.laiyifen.com
 ```
 
 正式要支持飞书群机器人收消息、@机器人回复、单聊申请、人工客服转接时，不建议只用 webhook；应接企业自建应用的事件订阅或长连接。
@@ -220,11 +310,14 @@ FEISHU_WEBHOOK_URL=https://open.feishu.cn/open-apis/bot/v2/hook/...
 - `GET /api/health`
 - `GET /api/agents/runtime`：查看每个智能体是否已配置 Dify Runtime
 - `GET /api/integration/sources`：查看当前“原站数据 + 自有 AI”来源状态
+- `GET /api/navigation/catalog`：查看当前菜单跳转链接目录，以及“原站不是前端直连数据库”的说明
 - `GET /api/dify/workflow/debug`：同时探测 Dify Workflow 与 Chat 回退，返回路由、输入变量、错误和修复建议
 - `POST /api/dify/workflow/debug`：提交自定义问题做 Dify 调试
 - `POST /api/agents/:id/test`：逐个测试某个智能体的 Dify 连接和模型配置
 - `GET /api/customer-ai/endpoints`：查看从测试站 AI 页面解析出的真实接口清单
 - `GET /api/customer-ai/remote/bootstrap?force=1`：尝试读取测试站 AI 的快捷问题、历史对话、工单列表等只读数据
+- `GET /api/customer-ai/real-data`：查看已经落盘的真实快捷问题、历史对话和工单数据
+- `POST /api/customer-ai/real-data/refresh`：强制读取测试站只读数据并写入本地真实数据存储
 - `ALL /api/customer-ai/remote/:key?force=1`：按接口 key 单独调试测试站接口，写接口仍受 `CUSTOMER_AI_WRITE_ENABLED` 控制
 - `GET /api/customer-ai/inspect`：只读探测来伊份测试 AI 页面，提取静态资源和疑似接口路径
 - `GET /api/workflow/audits`：查看最近工作流安全审计记录
@@ -300,12 +393,14 @@ CUSTOMER_AI_AUTH_TOKEN=测试站如需Authorization时填写
 CUSTOMER_AI_SIGN_ALGORITHM=customer-ai-hmac-sha1
 CUSTOMER_AI_SIGN_TEMPLATE=
 CUSTOMER_AI_TIMEOUT_MS=12000
+CUSTOMER_AI_STORAGE_DIR=storage
 ```
 
 当前推荐模式是“原站数据 + 自有 AI”：
 
 - `CUSTOMER_AI_REMOTE_ENABLED=true`：读取原站用户、快捷问题、工单、历史等业务数据。
 - `CUSTOMER_AI_REMOTE_AI_ENABLED=false`：不调用原站 AI 搜索、DeepSeek SSE、原站文件解析等生成/识别接口。
+- `CUSTOMER_AI_STORAGE_DIR=storage`：将规范化后的真实业务数据保存到 `storage/customer-ai-real-data.json`，该目录默认不提交到 Git。
 - AI 回答、多模态图片理解、思考链路统一走本地配置的 Dify/Qwen；`ENABLE_LOCAL_OCR=false` 时不会用 OCR 冒充图片理解。
 
 写接口默认只登记不调用。若需要在测试环境真实触发转人工、评分或创建会话，必须显式开启：

@@ -91,6 +91,8 @@ export interface ChatAction {
   type: 'navigate' | 'ticket';
   label: string;
   path?: string;
+  url?: string;
+  description?: string;
 }
 
 export interface WorkflowAction {
@@ -297,6 +299,13 @@ export interface BootstrapPayload {
     remoteAiEnabled?: boolean;
     successfulReads?: number;
     failedReads?: number;
+    stored?: boolean;
+    storedAt?: string;
+    storedCounts?: {
+      quickQuestions: number;
+      tickets: number;
+      conversationHistories: number;
+    };
   };
 }
 
@@ -314,8 +323,57 @@ export interface TicketChatMessage {
   createdAt: string;
 }
 
-async function request<T>(path: string, options?: RequestInit): Promise<T> {
-  const response = await fetch(path, {
+const API_BASE_URL = (() => {
+  const raw = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_BASE_URL) ? String(import.meta.env.VITE_API_BASE_URL) : '';
+  return raw.trim().replace(/\/$/, '');
+})();
+const normalizeApiBaseError = (error: unknown) => {
+  if (!(error instanceof Error)) {
+    return '';
+  }
+  return `${error.name}:${error.message}`;
+};
+const isNetworkFetchError = (error: unknown) => {
+  if (!(error instanceof Error)) {
+    return false;
+  }
+  const message = normalizeApiBaseError(error).toLowerCase();
+  return (
+    error instanceof TypeError &&
+    (message.includes('failed to fetch') || message.includes('networkerror') || message.includes('network error') || message.includes('fetch failed'))
+  );
+};
+
+function resolveApiPath(path: string) {
+  if (API_BASE_URL && path.startsWith('/')) {
+    return `${API_BASE_URL}${path}`;
+  }
+  if (API_BASE_URL && !/^https?:\/\//i.test(path)) {
+    return `${API_BASE_URL}/${path}`;
+  }
+  return path;
+}
+
+function buildOfflineBootstrapPayload(): BootstrapPayload {
+  return {
+    quickQuestions: [],
+    tickets: [],
+    conversationHistories: [],
+    agents: [],
+    supportStaff: [],
+    serviceHours: {
+      enabled: true,
+      workdays: '周一至周五',
+      start: '09:00',
+      end: '18:00',
+      offHoursMessage: '当前后端服务未连接，正在离线模式展示。'
+    },
+    difyConnected: false
+  };
+}
+
+async function request<T>(path: string, options?: RequestInit, useBase = true): Promise<T> {
+  const response = await fetch(useBase ? resolveApiPath(path) : path, {
     headers: options?.body instanceof FormData ? undefined : { 'Content-Type': 'application/json' },
     ...options
   });
@@ -337,8 +395,29 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
   return response.json() as Promise<T>;
 }
 
+let bootstrapRequest: Promise<BootstrapPayload> | null = null;
+
 export function getBootstrap() {
-  return request<BootstrapPayload>('/api/bootstrap');
+  if (!bootstrapRequest) {
+    bootstrapRequest = request<BootstrapPayload>('/api/bootstrap').catch(async (error) => {
+      if (isNetworkFetchError(error)) {
+        if (API_BASE_URL) {
+          try {
+            return await request<BootstrapPayload>('/api/bootstrap', undefined, false);
+          } catch (fallbackError) {
+            if (!isNetworkFetchError(fallbackError)) {
+              bootstrapRequest = null;
+              throw fallbackError;
+            }
+          }
+        }
+        return buildOfflineBootstrapPayload();
+      }
+      bootstrapRequest = null;
+      throw error;
+    });
+  }
+  return bootstrapRequest;
 }
 
 export function createSession(identity: Identity) {

@@ -13,9 +13,12 @@ dotenv.config();
 const app = express();
 const port = Number(process.env.PORT || 8788);
 const uploadDir = path.join(process.cwd(), 'uploads');
+const storageDir = path.resolve(process.cwd(), process.env.CUSTOMER_AI_STORAGE_DIR || 'storage');
+const customerAiRealDataPath = path.join(storageDir, 'customer-ai-real-data.json');
 const execFileAsync = promisify(execFile);
 
 fs.mkdirSync(uploadDir, { recursive: true });
+fs.mkdirSync(storageDir, { recursive: true });
 
 const upload = multer({
   dest: uploadDir,
@@ -61,7 +64,7 @@ const workflowConfig = {
 const workflowRouteConfig = {
   handoff: {
     label: '转人工',
-    patterns: [/转人工|人工客服|客服|工单|投诉|建议|反馈|联系工作人员/]
+    patterns: [/转人工|人工客服|联系客服|在线客服|提交工单|生成工单|创建工单|投诉|举报|建议|反馈|联系工作人员/]
   },
   task: {
     label: '任务执行',
@@ -82,6 +85,8 @@ const workflowRouteConfig = {
 const clamp01 = (value) => Math.max(0, Math.min(1, Number(value)));
 const normalizeConfidence = (value) => Number(clamp01(value).toFixed(3));
 const safeText = (value) => (typeof value === 'string' ? value.trim() : '');
+const collabPlatformBaseUrl = safeText(process.env.COLLAB_PLATFORM_BASE_URL || 'https://scm.test.laiyifen.com/webadmin_vue/collaborationPlatform.html').replace(/#.*$/, '');
+const collabPublicBaseUrl = safeText(process.env.COLLAB_PLATFORM_PUBLIC_BASE || 'https://www.laiyifen.com').replace(/\/$/, '');
 const isEnvTrue = (name, fallback = false) => {
   const value = safeText(process.env[name]).toLowerCase();
   if (!value) return fallback;
@@ -126,6 +131,162 @@ const customerAiRequestHeaders = {
   'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126 Safari/537.36',
   Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
 };
+const joinUrl = (baseUrl, suffix) => `${baseUrl}${suffix.startsWith('/') ? suffix : `/${suffix}`}`;
+const buildCollabPlatformUrl = (hashPath = 'home') => `${collabPlatformBaseUrl}#/${String(hashPath || 'home').replace(/^#?\//, '')}`;
+const navigationCatalog = [
+  {
+    key: 'platform-home',
+    label: '打开共创平台首页',
+    url: buildCollabPlatformUrl('home'),
+    group: 'platform',
+    access: 'verified-route',
+    description: '共创平台真实路由：/home。'
+  },
+  {
+    key: 'platform-todo',
+    label: '打开个人中心待办',
+    url: buildCollabPlatformUrl('personal'),
+    group: 'platform',
+    access: 'verified-route',
+    description: '共创平台真实路由：/personal；待办数据由 /server/basic/api/v1/message/page 接口加载。'
+  },
+  {
+    key: 'platform-contract',
+    label: '打开合同模板库',
+    url: buildCollabPlatformUrl('templateManage/templateBase'),
+    group: 'platform',
+    access: 'verified-route',
+    description: '共创平台真实路由：/templateManage/templateBase；电签相关真实路由另有 /electrosignature/basicInfo/*。'
+  },
+  {
+    key: 'platform-settlement',
+    label: '打开付款数据',
+    url: buildCollabPlatformUrl('reconciliation/virify/paymentData'),
+    group: 'platform',
+    access: 'verified-route',
+    description: '共创平台真实路由：/reconciliation/virify/paymentData，页面标题为“付款数据”。'
+  },
+  {
+    key: 'platform-supplier-profile',
+    label: '打开个人中心',
+    url: buildCollabPlatformUrl('personal'),
+    group: 'platform',
+    access: 'verified-route',
+    description: '共创平台真实路由：/personal；供应商主体信息由 queryPartnerAccountInfo 等接口加载。'
+  },
+  {
+    key: 'platform-account',
+    label: '打开个人中心',
+    url: buildCollabPlatformUrl('personal'),
+    group: 'platform',
+    access: 'verified-route',
+    description: '共创平台真实路由：/personal；账号权限由登录态 userInfo.elements 控制菜单展示。'
+  },
+  {
+    key: 'platform-franchise-opportunity',
+    label: '查看加盟合作页面',
+    url: joinUrl(collabPublicBaseUrl, 'bejoiner'),
+    group: 'public',
+    access: 'public-link',
+    description: '原站公开真实链接：/bejoiner。'
+  },
+  {
+    key: 'platform-store-task',
+    label: '打开个人中心待办',
+    url: buildCollabPlatformUrl('personal'),
+    group: 'platform',
+    access: 'verified-route',
+    description: '共创平台真实路由：/personal；门店/加盟待办通过消息与报名接口加载。'
+  },
+  {
+    key: 'platform-distributor-order',
+    label: '打开销售拼团订单',
+    url: buildCollabPlatformUrl('sales/collageOrder/1'),
+    group: 'platform',
+    access: 'verified-route',
+    description: '共创平台真实动态路由：/sales/collageOrder/:type。'
+  },
+  {
+    key: 'platform-commodity-summary',
+    label: '打开商品汇总',
+    url: buildCollabPlatformUrl('sales/commoditySummary'),
+    group: 'platform',
+    access: 'verified-route',
+    description: '共创平台真实路由：/sales/commoditySummary。'
+  },
+  {
+    key: 'platform-feedback',
+    label: '打开工单反馈',
+    url: buildCollabPlatformUrl('feedback'),
+    group: 'platform',
+    access: 'verified-route',
+    description: '共创平台真实路由：/feedback。'
+  },
+  {
+    key: 'platform-phone-change',
+    label: '打开手机号变更',
+    url: buildCollabPlatformUrl('phoneNumberForm'),
+    group: 'platform',
+    access: 'verified-route',
+    description: '共创平台真实路由：/phoneNumberForm。'
+  },
+  {
+    key: 'platform-esign-org',
+    label: '打开电签机构',
+    url: buildCollabPlatformUrl('electrosignature/basicInfo/elecOrganizationList'),
+    group: 'platform',
+    access: 'verified-route',
+    description: '共创平台真实路由：/electrosignature/basicInfo/elecOrganizationList。'
+  },
+  {
+    key: 'franchise-public',
+    label: '查看加盟合作页面',
+    url: joinUrl(collabPublicBaseUrl, 'bejoiner'),
+    group: 'public',
+    access: 'public-link',
+    description: '加盟合作公开入口。'
+  },
+  {
+    key: 'agency-public',
+    label: '查看经销合作页面',
+    url: joinUrl(collabPublicBaseUrl, 'beagency'),
+    group: 'public',
+    access: 'public-link',
+    description: '经销合作公开入口。'
+  },
+  {
+    key: 'contact-public',
+    label: '查看联系我们',
+    url: joinUrl(collabPublicBaseUrl, 'contact'),
+    group: 'public',
+    access: 'public-link',
+    description: '官方联系方式页面。'
+  },
+  {
+    key: 'company-public',
+    label: '查看公司介绍',
+    url: joinUrl(collabPublicBaseUrl, 'company'),
+    group: 'public',
+    access: 'public-link',
+    description: '公司介绍公开页。'
+  },
+  {
+    key: 'brand-public',
+    label: '查看品牌故事',
+    url: joinUrl(collabPublicBaseUrl, 'brand'),
+    group: 'public',
+    access: 'public-link',
+    description: '品牌故事公开页。'
+  },
+  {
+    key: 'integrity-platform',
+    label: '查看廉洁诚信规范',
+    url: buildCollabPlatformUrl('actionNorm'),
+    group: 'platform',
+    access: 'verified-route',
+    description: '共创平台真实路由：/actionNorm。'
+  }
+];
 const difyAgentEnvMap = {
   'agent-router': {
     label: '意图路由 Agent',
@@ -944,26 +1105,129 @@ function normalizeRemoteQuickQuestions(payload) {
 
 function normalizeRemoteTickets(payload) {
   return firstArray(payload).map((item, index) => ({
-    id: item.workOrderNo || item.orderNo || item.id || `REMOTE-TK-${index + 1}`,
-    title: item.title || item.questionTitle || item.problemTitle || item.summary || '远端工单',
+    id: item.workOrderNo || item.orderNo || item.workOrderId || item.id || `REMOTE-TK-${index + 1}`,
+    title: item.title || item.questionTitle || item.problemTitle || item.problemDescription || item.summary || item.workOrderTypeName || '远端工单',
     userName: item.userName || item.createName || item.name || '远端用户',
-    phone: item.phone || item.mobile || '-',
-    identity: item.identity || item.userType || '供应商',
-    channel: item.channel || '共创',
+    phone: item.phone || item.mobile || item.userMobile || item.contactPhone || '-',
+    identity: item.identity || item.userTypeName || item.userType || '供应商',
+    channel: item.channel || item.source || item.workOrderTypeName || '共创',
     priority: item.priority || 'P2',
-    category: item.category || item.typeName || '远端工单',
+    category: item.category || item.typeName || item.workOrderTypeName || '远端工单',
     status: item.statusName || item.status || '处理中',
     currentStaffId: item.currentStaffId || '',
-    currentStaff: item.currentStaff || item.serviceName || item.customerServiceName || '-',
-    rating: item.rating || item.score || '-',
-    serviceStartedAt: item.serviceStartedAt || item.createTime || '-',
+    currentStaff: item.currentStaff || item.serviceName || item.customerServiceName || item.closeUserName || '-',
+    rating: item.rating || item.score || item.userRating || '-',
+    serviceStartedAt: item.serviceStartedAt || item.workStartTime || item.createTime || '-',
     feishuStatus: item.feishuStatus || '-',
-    read: Boolean(item.read || item.isRead),
-    summary: item.summary || item.content || item.description || '',
-    createdAt: item.createdAt || item.createTime || now(),
-    updatedAt: item.updatedAt || item.updateTime || item.createTime || now(),
+    read: item.unReadCount !== undefined ? Number(item.unReadCount) === 0 : Boolean(item.read || item.isRead),
+    summary: item.summary || item.problemDescription || item.content || item.description || item.questionStatus || '',
+    createdAt: item.createdAt || item.createTime || item.workStartTime || now(),
+    updatedAt: item.updatedAt || item.updateTime || item.workEndTime || item.workStartTime || item.createTime || now(),
     transferLogs: []
   }));
+}
+
+function remoteTicketsToHistories(tickets) {
+  return tickets.map((ticket, index) => {
+    const description = ticket.summary || ticket.title || '远端工单记录';
+    const messages = [
+      {
+        id: `remote-ticket-history-${index}-0`,
+        role: 'user',
+        sender: ticket.userName || '用户',
+        text: description,
+        createdAt: ticket.createdAt || ticket.updatedAt || now()
+      }
+    ];
+    if (ticket.status || ticket.id) {
+      messages.push({
+        id: `remote-ticket-history-${index}-1`,
+        role: 'system',
+        sender: '系统',
+        text: `工单 ${ticket.id} 当前状态：${ticket.status || '未知'}`,
+        createdAt: ticket.updatedAt || ticket.createdAt || now()
+      });
+    }
+    return {
+      id: `remote-ticket-history-${ticket.id || index}`,
+      title: ticket.title || `远端工单 ${index + 1}`,
+      type: 'service',
+      identity: ticket.identity || '供应商',
+      channel: ticket.channel || '共创',
+      status: ticket.status || '处理中',
+      staffName: ticket.currentStaff && ticket.currentStaff !== '-' ? ticket.currentStaff : undefined,
+      ticketId: ticket.id,
+      updatedAt: ticket.updatedAt || ticket.createdAt || now(),
+      messages
+    };
+  });
+}
+
+function normalizeStoredCustomerAiRealData(value = {}) {
+  return {
+    version: 1,
+    source: value.source || 'customer-ai-remote',
+    updatedAt: value.updatedAt || '',
+    quickQuestions: Array.isArray(value.quickQuestions) ? value.quickQuestions : [],
+    tickets: Array.isArray(value.tickets) ? value.tickets : [],
+    conversationHistories: Array.isArray(value.conversationHistories) ? value.conversationHistories : []
+  };
+}
+
+function countCustomerAiRealData(data) {
+  return {
+    quickQuestions: data.quickQuestions.length,
+    tickets: data.tickets.length,
+    conversationHistories: data.conversationHistories.length
+  };
+}
+
+function hasCustomerAiRealData(data) {
+  const counts = countCustomerAiRealData(data);
+  return counts.quickQuestions > 0 || counts.tickets > 0 || counts.conversationHistories > 0;
+}
+
+function readCustomerAiRealData() {
+  try {
+    if (!fs.existsSync(customerAiRealDataPath)) {
+      return normalizeStoredCustomerAiRealData();
+    }
+    const raw = fs.readFileSync(customerAiRealDataPath, 'utf8');
+    return normalizeStoredCustomerAiRealData(JSON.parse(raw));
+  } catch (error) {
+    console.warn(`Failed to read customer AI real data store: ${error.message}`);
+    return normalizeStoredCustomerAiRealData();
+  }
+}
+
+function writeCustomerAiRealData(data) {
+  const normalized = normalizeStoredCustomerAiRealData(data);
+  const tempPath = `${customerAiRealDataPath}.tmp`;
+  fs.writeFileSync(tempPath, `${JSON.stringify(normalized, null, 2)}\n`, 'utf8');
+  fs.renameSync(tempPath, customerAiRealDataPath);
+  return normalized;
+}
+
+function persistCustomerAiRealData(remote) {
+  const existing = readCustomerAiRealData();
+  const fresh = {
+    quickQuestions: Array.isArray(remote.quickQuestions) ? remote.quickQuestions : [],
+    tickets: Array.isArray(remote.tickets) ? remote.tickets : [],
+    conversationHistories: Array.isArray(remote.histories) ? remote.histories : []
+  };
+  const hasFreshData = fresh.quickQuestions.length > 0 || fresh.tickets.length > 0 || fresh.conversationHistories.length > 0;
+  if (!hasFreshData) {
+    return existing;
+  }
+
+  return writeCustomerAiRealData({
+    version: 1,
+    source: 'customer-ai-remote',
+    updatedAt: now(),
+    quickQuestions: fresh.quickQuestions.length ? fresh.quickQuestions : existing.quickQuestions,
+    tickets: fresh.tickets.length ? fresh.tickets : existing.tickets,
+    conversationHistories: fresh.conversationHistories.length ? fresh.conversationHistories : existing.conversationHistories
+  });
 }
 
 function normalizeRemoteHistories(payload) {
@@ -1014,12 +1278,21 @@ async function getCustomerAiRemoteBootstrap(force = false) {
   ];
   const results = await Promise.all(keys.map((key) => callCustomerAiEndpoint(key, { force })));
   const byKey = Object.fromEntries(results.map((result) => [result.key, result]));
-  return {
+  const tickets = byKey.myWorkOrders?.ok ? normalizeRemoteTickets(byKey.myWorkOrders.data) : [];
+  const histories = byKey.commentHistory?.ok ? normalizeRemoteHistories(byKey.commentHistory.data) : [];
+  const remotePayload = {
     ok: results.some((result) => result.ok),
     results,
     quickQuestions: byKey.quickQuestions?.ok ? normalizeRemoteQuickQuestions(byKey.quickQuestions.data) : [],
-    histories: byKey.commentHistory?.ok ? normalizeRemoteHistories(byKey.commentHistory.data) : [],
-    tickets: byKey.myWorkOrders?.ok ? normalizeRemoteTickets(byKey.myWorkOrders.data) : []
+    histories: histories.length ? histories : remoteTicketsToHistories(tickets),
+    tickets
+  };
+  const stored = persistCustomerAiRealData(remotePayload);
+  return {
+    ...remotePayload,
+    stored: hasCustomerAiRealData(stored),
+    storedAt: stored.updatedAt,
+    storedCounts: countCustomerAiRealData(stored)
   };
 }
 
@@ -1284,51 +1557,259 @@ const supportStaff = [
 let quickQuestions = [
   {
     id: 'qq-001',
-    title: '供应商入驻后下一步做什么？',
+    title: '我这边还有哪些待办没处理？',
     identity: '供应商',
     sort: 1,
-    enabled: true,
-    agent: 'agent-knowledge'
-  },
-  {
-    id: 'qq-002',
-    title: '查看今日待办和合同授权状态',
-    identity: '供应商',
-    sort: 2,
     enabled: true,
     agent: 'agent-business'
   },
   {
+    id: 'qq-002',
+    title: '合同授权卡在待确认，下一步怎么做？',
+    identity: '供应商',
+    sort: 2,
+    enabled: true,
+    agent: 'agent-knowledge'
+  },
+  {
     id: 'qq-003',
-    title: '商机报名后如何继续操作？',
-    identity: '加盟商',
-    sort: 1,
+    title: '供应商资料提交后多久能审核完？',
+    identity: '供应商',
+    sort: 3,
     enabled: true,
     agent: 'agent-knowledge'
   },
   {
     id: 'qq-004',
-    title: '门店社区长如何查看今日待办？',
+    title: '这个账号为什么看不到结算入口？',
+    identity: '供应商',
+    sort: 4,
+    enabled: true,
+    agent: 'agent-business'
+  },
+  {
+    id: 'qq-005',
+    title: '我想补传营业执照，在哪里操作？',
+    identity: '供应商',
+    sort: 5,
+    enabled: true,
+    agent: 'agent-knowledge'
+  },
+  {
+    id: 'qq-006',
+    title: 'SAP 编码和主体名称不一致怎么办？',
+    identity: '供应商',
+    sort: 6,
+    enabled: true,
+    agent: 'agent-business'
+  },
+  {
+    id: 'qq-007',
+    title: '入驻完成后先做哪三步？',
+    identity: '供应商',
+    sort: 7,
+    enabled: true,
+    agent: 'agent-knowledge'
+  },
+  {
+    id: 'qq-008',
+    title: '待办超过 3 天未处理可以找谁？',
+    identity: '供应商',
+    sort: 8,
+    enabled: true,
+    agent: 'agent-feishu'
+  },
+  {
+    id: 'qq-009',
+    title: '我刚提交加盟资料，下一步做什么？',
+    identity: '加盟商',
+    sort: 1,
+    enabled: true,
+    agent: 'agent-knowledge'
+  },
+  {
+    id: 'qq-010',
+    title: '今天还有哪些加盟待办没完成？',
     identity: '加盟商',
     sort: 2,
     enabled: true,
     agent: 'agent-business'
   },
   {
-    id: 'qq-005',
-    title: '客服工单如何转派给业务同事？',
+    id: 'qq-011',
+    title: '商机报名后多久会有人联系我？',
+    identity: '加盟商',
+    sort: 3,
+    enabled: true,
+    agent: 'agent-knowledge'
+  },
+  {
+    id: 'qq-012',
+    title: '意向城市填错了怎么修改？',
+    identity: '加盟商',
+    sort: 4,
+    enabled: true,
+    agent: 'agent-business'
+  },
+  {
+    id: 'qq-013',
+    title: '门店审核卡在待确认怎么办？',
+    identity: '加盟商',
+    sort: 5,
+    enabled: true,
+    agent: 'agent-business'
+  },
+  {
+    id: 'qq-014',
+    title: '培训通知和开店资料在哪里看？',
+    identity: '加盟商',
+    sort: 6,
+    enabled: true,
+    agent: 'agent-knowledge'
+  },
+  {
+    id: 'qq-015',
+    title: '保证金资料补交入口在哪？',
+    identity: '加盟商',
+    sort: 7,
+    enabled: true,
+    agent: 'agent-business'
+  },
+  {
+    id: 'qq-016',
+    title: '注册流程能发我一下吗？',
+    identity: '加盟商',
+    sort: 8,
+    enabled: true,
+    agent: 'agent-knowledge'
+  },
+  {
+    id: 'qq-017',
+    title: '今天还有哪些客户待回访？',
     identity: '员工',
     sort: 1,
     enabled: true,
     agent: 'agent-feishu'
   },
   {
-    id: 'qq-006',
-    title: '经销商合同授权信息怎么查？',
+    id: 'qq-018',
+    title: '哪几张工单超过一周还没结案？',
+    identity: '员工',
+    sort: 2,
+    enabled: true,
+    agent: 'agent-business'
+  },
+  {
+    id: 'qq-019',
+    title: '待审核的待办有哪些？',
+    identity: '员工',
+    sort: 3,
+    enabled: true,
+    agent: 'agent-business'
+  },
+  {
+    id: 'qq-020',
+    title: '这个客户应该转给哪个组？',
+    identity: '员工',
+    sort: 4,
+    enabled: true,
+    agent: 'agent-feishu'
+  },
+  {
+    id: 'qq-021',
+    title: '账号权限类工单怎么判断优先级？',
+    identity: '员工',
+    sort: 5,
+    enabled: true,
+    agent: 'agent-knowledge'
+  },
+  {
+    id: 'qq-022',
+    title: '飞书通知失败的工单有哪些？',
+    identity: '员工',
+    sort: 6,
+    enabled: true,
+    agent: 'agent-feishu'
+  },
+  {
+    id: 'qq-023',
+    title: '哪些会话已经接入人工但还没回复？',
+    identity: '员工',
+    sort: 7,
+    enabled: true,
+    agent: 'agent-business'
+  },
+  {
+    id: 'qq-024',
+    title: '本周投诉类工单有几单？',
+    identity: '员工',
+    sort: 8,
+    enabled: true,
+    agent: 'agent-business'
+  },
+  {
+    id: 'qq-025',
+    title: '本周待处理订单有哪些？',
     identity: '经销商',
     sort: 1,
     enabled: true,
     agent: 'agent-business'
+  },
+  {
+    id: 'qq-026',
+    title: '经销商合同授权状态怎么查？',
+    identity: '经销商',
+    sort: 2,
+    enabled: true,
+    agent: 'agent-knowledge'
+  },
+  {
+    id: 'qq-027',
+    title: '哪些门店还没完成对账？',
+    identity: '经销商',
+    sort: 3,
+    enabled: true,
+    agent: 'agent-business'
+  },
+  {
+    id: 'qq-028',
+    title: '返利申请提交后多久审核？',
+    identity: '经销商',
+    sort: 4,
+    enabled: true,
+    agent: 'agent-knowledge'
+  },
+  {
+    id: 'qq-029',
+    title: '库存预警在哪里看？',
+    identity: '经销商',
+    sort: 5,
+    enabled: true,
+    agent: 'agent-business'
+  },
+  {
+    id: 'qq-030',
+    title: '渠道价格有变更怎么确认？',
+    identity: '经销商',
+    sort: 6,
+    enabled: true,
+    agent: 'agent-knowledge'
+  },
+  {
+    id: 'qq-031',
+    title: '超过一周的待办有哪些？',
+    identity: '经销商',
+    sort: 7,
+    enabled: true,
+    agent: 'agent-business'
+  },
+  {
+    id: 'qq-032',
+    title: '账号被停用后怎么恢复？',
+    identity: '经销商',
+    sort: 8,
+    enabled: true,
+    agent: 'agent-knowledge'
   }
 ];
 
@@ -1413,19 +1894,29 @@ const serviceHours = {
 
 function classifyIntent(text = '', files = [], inputMode = 'text') {
   const normalized = safeText(text).toLowerCase();
-  if (inputMode === 'multimodal' || files.some((item) => isImageMime(item?.mime)) || files.some((item) => !item?.mime || !isImageMime(item.mime))) {
+  if (inputMode === 'multimodal' || files.some((item) => isImageMime(item?.mime))) {
     return { category: '附件图片文件识别', priority: 'P1', agentId: 'agent-file', confidence: 0.88 };
+  }
+  if (files.some((item) => item?.mime && !isImageMime(item.mime))) {
+    return { category: '附件文档分析', priority: 'P1', agentId: 'agent-file', confidence: 0.84 };
   }
   if (/图片|截图|上传|文件|pdf|excel|附件|ocr|识别|页面理解/.test(normalized)) {
     return { category: '附件图片文件识别', priority: 'P1', agentId: 'agent-file', confidence: 0.86 };
+  }
+  if (/文档|表格|txt|文本|总结附件|解析附件|附件内容/.test(normalized)) {
+    return { category: '附件文档分析', priority: 'P1', agentId: 'agent-file', confidence: 0.82 };
   }
   if (/卡死|故障|bug|报错|加载失败|按钮.*(无效|不可用)|接口错误|功能缺陷|ai.*(异常|错误)|无法提交|无法发送/.test(text)) {
     return { category: '系统异常与缺陷', priority: 'P0', agentId: 'agent-router', confidence: 0.86 };
   }
   if (/登录|忘记密码|密码|手机号|账号|账户|绑定|角色|权限|看不到.*菜单|没有.*权限/.test(text)) {
-    return { category: '账号权限与登录', priority: 'P0', agentId: 'agent-business', confidence: 0.86 };
+    const accountUrgent = /无法登录|登不上|登录不上|账号被停用|账号异常|无法进入系统|全部权限失效/.test(text);
+    return { category: '账号权限与登录', priority: accountUrgent ? 'P0' : 'P1', agentId: 'agent-business', confidence: 0.86 };
   }
-  if (/转人工|人工客服|客服|工单|评价服务|服务时间/.test(text)) {
+  if (/今日待办|待办|工单状态|工单进度|订单状态|审批状态|查.*状态|查询.*状态/.test(text)) {
+    return { category: '业务查询', priority: 'P1', agentId: 'agent-business', confidence: 0.84 };
+  }
+  if (/转人工|人工客服|评价服务|服务时间|客服接入|转派客服/.test(text)) {
     return { category: '工单与人工客服', priority: 'P0', agentId: 'agent-feishu', confidence: 0.86 };
   }
   if (/合同|结算|授权|电子签章|签章|付款|发票|财务联系人/.test(text)) {
@@ -1537,6 +2028,21 @@ function classifyWorkflowRoute(text = '', files = [], inputMode = 'text', contex
       confidence: 0.55,
       matched: '',
       fallback: true
+    };
+  }
+  const isPermissionNavigationQuestion =
+    (
+      /(账号|账户|登录|密码|手机号|验证码|权限|角色|菜单|入口|页面|按钮|结算|合同授权|待办|工作台)/.test(normalized) &&
+      /(为什么|为何|看不到|找不到|没有|无法|进不去|登不上|登录不上|在哪|哪里|怎么|怎么办|说明|流程)/.test(normalized)
+    ) ||
+    /看不到.*(结算|待办|合同授权|菜单|入口)|((结算|待办|合同授权).*(入口|权限))/.test(normalized);
+  if (isPermissionNavigationQuestion) {
+    return {
+      route: 'knowledge',
+      routeLabel: workflowRouteConfig.knowledge.label,
+      confidence: 0.9,
+      matched: 'account_permission_entry',
+      fallback: false
     };
   }
   for (const route of routeCandidates) {
@@ -1683,7 +2189,11 @@ function buildAgent4Workflow({ text, identity, inputMode, files = [], translatio
   const evidenceIds = files.map((item) => item?.id || item?.name).filter(Boolean);
   const structuredBlocks = buildAgent1FileBlocks(files);
   const intent = classifyIntent(text, files, normalizedMode);
-  const highRiskKeywords = workflowConfig.highRiskKeywords.test(normalized);
+  const rawHighRiskKeywords = workflowConfig.highRiskKeywords.test(normalized);
+  const guideOnlyQuestion =
+    /(怎么|如何|在哪|哪里|为什么|为何|入口|流程|步骤|说明|指南|看不到|找不到|打不开|无法|能不能|可以|是不是)/.test(normalized) &&
+    !/(确认执行|同意执行|直接执行|立即执行|马上执行|帮我.*(修改|删除|导出|更新|变更|审批|跳转)|替我.*(修改|删除|导出|更新|变更|审批|跳转)|把.*(修改|更新|变更|删除)|改成|改为)/.test(normalized);
+  const highRiskKeywords = rawHighRiskKeywords && !guideOnlyQuestion;
   const needsExternalAction = /查询|查询一下|待办|审批|工单|操作/.test(normalized);
   const roleConflict = isRoleSceneConflict(text, actor);
   const actionPlan = [];
@@ -2096,26 +2606,41 @@ async function runWorkflowDataNode(context = {}) {
   };
   const dataRows = await queryWorkflowDataForIdentity(routeIntent, profile);
   const profileScope = profile.scopes || [];
-  if (!profileScope.includes('业务查询') && !profileScope.includes('数据') && profile.permissionLevel !== '高') {
+  const hasReadPermission =
+    profile.permissionLevel === '高' ||
+    ['业务查询', '数据', 'todo-view', '待办查询', '工单反馈'].some((scope) => profileScope.includes(scope));
+  if (!hasReadPermission) {
+    const isPermissionIssue = /账号|账户|权限|菜单|入口|登录|角色|结算入口|合同授权入口|待办入口/.test(text);
     return {
       route: 'analytics',
       source: 'mock',
-      requiresConfirmation: true,
+      requiresConfirmation: false,
       reason: '用户画像未返回数据查询权限',
       result: {
-        category: '数据分析',
+        category: isPermissionIssue ? '账号权限' : '数据分析',
         priority: 'P1',
         reply:
-          '当前角色画像未满足数据查询权限，或你当前环境尚未完成权限白名单配置。请切换到“转人工客服”由后台确认数据权限。',
-        agent: agents[0],
+          isPermissionIssue
+            ? '结论：当前更像账号角色或菜单权限问题，不需要再走“确认执行”。\n\n处理步骤：\n1. 先核验当前账号是否绑定了正确主体、角色和菜单权限；\n2. 如果结算、合同授权或待办入口仍不可见，直接转人工客服由后台核验；\n3. 建议补充账号、用户身份、问题页面名称或截图，方便客服定位。'
+            : '结论：当前账号暂未拿到数据查询权限，所以我先不继续读取业务数据。\n\n处理步骤：\n1. 请先确认当前账号是否具备数据查询或待办查看权限；\n2. 若需后台核验，请直接转人工客服；\n3. 也可以换有权限的账号后重新查询。',
+        agent: isPermissionIssue ? agents[1] : agents[2],
         citations: [
           {
-            label: '风险控制',
-            value: '权限校验未通过'
+            label: '权限判断',
+            value: '当前角色画像未返回数据查询权限'
+          },
+          {
+            label: '数据来源',
+            value: isCustomerAiRemoteEnabled(false) ? '原站业务接口（openapi/ai-openapi），不是浏览器直连数据库' : '本地模拟业务数据'
           }
-        ]
+        ],
+        actions: buildContextActions({
+          query: text,
+          category: isPermissionIssue ? '账号权限' : '数据分析'
+        })
       },
-      tracePath: markWorkflowPathDoneUntil(executionPath, 'K')
+      tracePath: markWorkflowPathDoneUntil(executionPath, 'K'),
+      confidence: Math.max(trace.agent2_intent.confidence, 0.72)
     };
   }
 
@@ -2151,7 +2676,17 @@ async function runWorkflowDataNode(context = {}) {
       category: '数据分析',
       priority: 'P1',
       ...explainResult,
-      actions: buildSupportActions()
+      citations: [
+        ...((explainResult && Array.isArray(explainResult.citations)) ? explainResult.citations : []),
+        {
+          label: '数据来源',
+          value: isCustomerAiRemoteEnabled(false) ? '原站业务接口（openapi/ai-openapi），不是浏览器直连数据库' : '本地模拟业务数据'
+        }
+      ],
+      actions: buildContextActions({
+        query: text,
+        category: '数据分析'
+      })
     },
     confidence: Math.max(trace.agent2_intent.confidence, 0.6),
     tracePath: markWorkflowPathDoneUntil(executionPath, 'X')
@@ -2437,13 +2972,77 @@ function pickStaff(category) {
   return available || supportStaff.find((staff) => staff.id === 'cs-001');
 }
 
-function buildSupportActions() {
-  return [
-    {
+function buildNavigationActions({ query = '', category = '' } = {}) {
+  const normalized = `${safeText(query)} ${safeText(category)}`.toLowerCase();
+  const actions = [];
+  const pushByKey = (key) => {
+    const target = navigationCatalog.find((item) => item.key === key);
+    if (!target || actions.some((item) => item.path === target.key || item.url === target.url)) return;
+    actions.push({
+      type: 'navigate',
+      label: target.label,
+      path: target.key,
+      url: target.url,
+      description: target.description
+    });
+  };
+
+  if (/手机号|手机|号码变更|换绑/.test(normalized)) {
+    pushByKey('platform-phone-change');
+  } else if (/工单|反馈|投诉|建议/.test(normalized)) {
+    pushByKey('platform-feedback');
+  } else if (/合同|授权|签章/.test(normalized)) {
+    pushByKey('platform-contract');
+  } else if (/结算|账单|发票|付款|财务/.test(normalized)) {
+    pushByKey('platform-settlement');
+  } else if (/商品|货品|销售汇总|商品汇总/.test(normalized)) {
+    pushByKey('platform-commodity-summary');
+  } else if (/待办|审批|待处理|待确认/.test(normalized)) {
+    pushByKey('platform-todo');
+  } else if (/加盟|商机|报名/.test(normalized)) {
+    pushByKey('platform-franchise-opportunity');
+  } else if (/门店|社区长|美食顾问/.test(normalized)) {
+    pushByKey('platform-store-task');
+  } else if (/经销商|经销|渠道|订单|对账|库存/.test(normalized)) {
+    pushByKey('platform-distributor-order');
+  } else if (/供应商|入驻|sap|主体|营业执照|资料/.test(normalized)) {
+    pushByKey('platform-supplier-profile');
+  } else if (/权限|账号|登录|入口|菜单|工作台/.test(normalized)) {
+    pushByKey('platform-account');
+  } else if (/举报|热线|联系|电话/.test(normalized)) {
+    pushByKey('contact-public');
+  } else if (/品牌|品牌故事/.test(normalized)) {
+    pushByKey('brand-public');
+  } else if (/公司|公司介绍/.test(normalized)) {
+    pushByKey('company-public');
+  } else if (/廉洁|诚信|准则|举报/.test(normalized)) {
+    pushByKey('integrity-platform');
+  }
+
+  if (actions.length === 0 && /加盟|门店|社区长|美食顾问/.test(normalized)) {
+    pushByKey('franchise-public');
+  }
+
+  if (actions.length === 0 && /经销商|经销|渠道/.test(normalized)) {
+    pushByKey('agency-public');
+  }
+
+  if (actions.length === 0 && /供应商|入驻|sap|合同|授权|待办|工单|订单|资料中心|菜单|首页|工作台|权限|账号|登录/.test(normalized)) {
+    pushByKey('platform-home');
+  }
+
+  return actions.slice(0, 1);
+}
+
+function buildContextActions({ query = '', category = '', includeTicket = true, ticketLabel = '转人工客服' } = {}) {
+  const actions = [...buildNavigationActions({ query, category })];
+  if (includeTicket) {
+    actions.push({
       type: 'ticket',
-      label: '转人工客服'
-    }
-  ];
+      label: ticketLabel
+    });
+  }
+  return actions;
 }
 
 function buildNoAnswerReply(reason = '当前暂时没有找到可直接回答的问题答案。') {
@@ -2453,6 +3052,8 @@ function buildNoAnswerReply(reason = '当前暂时没有找到可直接回答的
 function buildKnowledgeReply(query, identity, files = [], inputMode = 'text') {
   const normalized = safeText(query).toLowerCase();
   const hasFiles = files.length > 0;
+  const hasImageAttachment = files.some((item) => isImageMime(item?.mime));
+  const hasDocumentAttachment = files.some((item) => item?.mime && !isImageMime(item.mime));
 
   if (/后台数据|看一下后台|看.*后台|实时数据|真实数据|数据库/.test(normalized)) {
     return {
@@ -2534,17 +3135,28 @@ function buildKnowledgeReply(query, identity, files = [], inputMode = 'text') {
       priority: 'P1',
       reply:
         `结论：您可以在当前对话直接转人工，转人工后不会跳转页面。\n\n`
-        + `说明：\n1. 人工客服服务时间为周一至周五 09:00-18:00；\n2. 转人工后，客服后台回复会直接出现在当前对话；\n3. 工单转派仅客服后台可操作，用户端只查看处理状态和评价服务。`
+        + `说明：\n1. 人工客服服务时间为周一至周五 09:00-18:00；\n2. 转人工后，接入客服会直接在当前对话回复；\n3. 工单转派由客服坐席处理，用户端只查看处理状态和评价服务。`
     };
   }
 
-  if (/图片|截图|上传|文件|pdf|excel|附件|识别|ocr/.test(normalized) || inputMode === 'multimodal' || hasFiles) {
+  if (/图片|截图|识别|ocr|页面理解/.test(normalized) || inputMode === 'multimodal' || hasImageAttachment) {
     return {
       category: '附件识别',
       priority: 'P1',
       reply: hasFiles
         ? `结论：已收到您上传的附件。\n\n处理方式：\n1. 图片会优先通过多模态模型直接识别；\n2. 如果多模态模型未接通，系统会提示配置问题，不会默认用 OCR 冒充识图；\n3. 若需要人工核验，请点击「转人工客服」。`
         : `请先上传图片、截图或文件，我再帮您判断页面问题或资料内容。`
+    };
+  }
+
+  if (/文件|pdf|excel|附件|文档|表格|txt|文本/.test(normalized) || hasDocumentAttachment) {
+    const extractedPreview = files.map((file) => getUsefulDocumentText(file)).filter(Boolean).join('\n').slice(0, 240);
+    return {
+      category: '附件文档分析',
+      priority: 'P1',
+      reply: hasFiles
+        ? `结论：已收到您上传的文档附件。\n\n处理方式：\n1. 系统会优先结合附件提取到的文字和文件元信息进行总结；\n2. 如果暂未拿到正文内容，会明确说明，不会编造附件内容；\n3. 若需要人工核验，请点击「转人工客服」。${extractedPreview ? `\n\n当前已提取到部分文字：\n${extractedPreview}` : ''}`
+        : `请先上传文档附件，并说明您希望我提取、总结或核对的重点。`
     };
   }
 
@@ -2579,7 +3191,11 @@ function mockReply(query, identity = '供应商', files = [], options = {}) {
         value: '共创平台常见问题'
       }
     ],
-    actions: buildSupportActions()
+    actions: buildContextActions({
+      query,
+      category: knowledgeReply?.category || intent.category,
+      ticketLabel: '生成客服工单'
+    })
   };
 }
 
@@ -2784,12 +3400,11 @@ function buildDifyResult({ query, files, inputMode, runtime, reply, category, pr
         value: runtime.agentId === 'dify-workflow' ? getDifyWorkflowInputKey() : runtime.agentId
       }
     ],
-    actions: [
-      {
-        type: 'ticket',
-        label: '生成客服工单'
-      }
-    ],
+    actions: buildContextActions({
+      query,
+      category: category || intent.category,
+      ticketLabel: '生成客服工单'
+    }),
     workflowEvents
   };
 }
@@ -2816,7 +3431,7 @@ function buildDeepSeekSystemPrompt(identity = '供应商') {
     '回答要求：用中文，简洁、客服式、可执行；优先给结论和步骤；不要编造后台数据；不能确认的信息提示转人工或提交工单。',
     '格式要求：不要使用 emoji；不要使用营销化语气；少用 Markdown 粗体，保持后台客服系统可读。',
     '业务边界：供应商入驻、合同授权、账号权限、加盟商商机报名、今日待办、工单与人工客服、附件上传和脱敏识别。',
-    '规则：转人工不会跳转页面；人工客服服务时间为周一至周五 09:00-18:00；工单转派只能由客服后台操作。'
+    '规则：转人工不会跳转页面；人工客服服务时间为周一至周五 09:00-18:00；工单转派由接入客服坐席处理。'
   ].join('\n');
 }
 
@@ -2853,7 +3468,10 @@ function buildDeepSeekResult({ query, identity, files = [], inputMode = 'text', 
         value: runtime.model
       }
     ],
-    actions: buildSupportActions()
+    actions: buildContextActions({
+      query,
+      category: intent.category
+    })
   };
 }
 
@@ -2862,6 +3480,39 @@ function resolveLocalUploadPath(file = {}) {
   if (!name) return '';
   const fullPath = path.join(uploadDir, name);
   return fullPath.startsWith(uploadDir) ? fullPath : '';
+}
+
+const textExtractableExtensions = new Set(['.txt', '.md', '.markdown', '.csv', '.json', '.xml', '.yaml', '.yml', '.log']);
+
+function isTextExtractableFile(file = {}) {
+  const mime = safeText(file.mimetype || file.mime).toLowerCase();
+  if (/^text\//.test(mime)) return true;
+  if (/^application\/(json|xml|csv|yaml|x-yaml|toml|javascript|x-ndjson)/.test(mime)) return true;
+  const extension = path.extname(file.originalname || file.name || '').toLowerCase();
+  return textExtractableExtensions.has(extension);
+}
+
+function extractDocumentText(file = {}, maxChars = 4000) {
+  if (!file?.path || !isTextExtractableFile(file)) return '';
+  try {
+    const text = fs.readFileSync(file.path, 'utf8').replace(/^\uFEFF/, '').replace(/\u0000/g, '').replace(/\r\n?/g, '\n').trim();
+    if (!text) return '';
+    return text.length > maxChars ? `${text.slice(0, maxChars)}\n[内容已截断]` : text;
+  } catch {
+    return '';
+  }
+}
+
+function getUsefulDocumentText(file = {}) {
+  const text = safeText(file.extractedText || file.ocrText || '');
+  return /^文档已上传[,，]/.test(text) ? '' : text;
+}
+
+function getUsefulImageText(file = {}) {
+  return safeText(file.ocrText || file.extractedText || '')
+    .replace(/^图片已上传，多模态优先；本地 OCR 兜底已识别到以下文字：\n?/, '')
+    .replace(/^图片已上传，本地 OCR 已识别到以下文字：\n?/, '')
+    .trim();
 }
 
 function fileToImageContent(file = {}) {
@@ -2893,24 +3544,34 @@ function isDirectMultimodalUnavailableError(message = '') {
 
 function buildModelFileContext(files = [], options = {}) {
   if (!Array.isArray(files) || files.length === 0) return '';
-  const includeExtractedText = options.includeExtractedText ?? shouldUseLocalOcr();
+  const includeDocumentText = options.includeDocumentText ?? true;
+  const includeImageText = options.includeImageText ?? shouldUseLocalOcr();
   const rows = files.map((file, index) => {
     const fileName = file.originalName || file.name || `附件${index + 1}`;
     const mime = file.mime || 'unknown';
     const difyState = file.difyFileId ? '已上传到 Dify，可作为多模态文件输入' : '仅本地接收，未拿到 Dify 文件 ID';
-    const extracted = includeExtractedText
-      ? safeText(file.ocrText || (file.extractedText || '').replace(/^图片已上传，本地 OCR 已识别到以下界面文字：\n?/, ''))
-      : '';
+    const extracted = isImageMime(file.mime)
+      ? includeImageText
+        ? getUsefulImageText(file)
+        : ''
+      : includeDocumentText
+        ? getUsefulDocumentText(file)
+        : '';
     return `- ${fileName}（${mime}）：${difyState}${extracted ? `\n  本地提取内容：${extracted.slice(0, 1800)}` : ''}`;
   });
   return `\n\n已上传附件上下文：\n${rows.join('\n')}`;
 }
 
 function buildModelQuery(query, files = []) {
-  const attachmentRouteHint = Array.isArray(files) && files.length > 0
-    ? '\n\n【路由提示】本次请求包含上传附件，必须优先进入“附件多模态识别”分支，由多模态模型直接查看文件内容。'
-    : '';
-  return `${query}${attachmentRouteHint}${buildModelFileContext(files, { includeExtractedText: shouldUseLocalOcr() })}`;
+  const attachmentRouteHint = hasImageFiles(files)
+    ? '\n\n【路由提示】本次请求包含图片附件，必须优先进入“附件多模态识别”分支，由多模态模型直接查看图片内容。'
+    : Array.isArray(files) && files.length > 0
+      ? '\n\n【路由提示】本次请求包含文档附件，请优先结合附件提取文字和文件元信息回答；如果未拿到正文内容，必须明确说明，不要编造。'
+      : '';
+  return `${query}${attachmentRouteHint}${buildModelFileContext(files, {
+    includeDocumentText: true,
+    includeImageText: shouldUseLocalOcr()
+  })}`;
 }
 
 function buildReasoningSummary({ trace, source, files = [], result, fallbackReason = '' }) {
@@ -2954,11 +3615,17 @@ async function callDeepSeek({ query, identity = '供应商', files = [], inputMo
   }
 
   const imageContents = runtime.enableImageUrl ? files.map(fileToImageContent).filter(Boolean) : [];
+  const hasVisualAttachment = hasImageFiles(files);
   const fileContext = files.length
-    ? `${buildModelFileContext(files, { includeExtractedText: shouldUseLocalOcr() })}\n${
-        imageContents.length > 0
+    ? `${buildModelFileContext(files, {
+        includeDocumentText: true,
+        includeImageText: shouldUseLocalOcr()
+      })}\n${
+        hasVisualAttachment
+          ? imageContents.length > 0
           ? '图片已作为视觉输入随请求发送，请识别界面关键信息。'
           : '当前 DeepSeek 接口未接收图片视觉输入；不要声称已经完整读取图片内容。'
+          : '文档附件已通过提取文字和文件元信息附带到上下文中；请仅基于这些已提供内容回答，未拿到正文时要明确说明。'
       }`
     : '';
   const userContent =
@@ -3424,6 +4091,18 @@ app.get('/api/integration/sources', (_req, res) => {
   });
 });
 
+app.get('/api/navigation/catalog', (_req, res) => {
+  res.json({
+    ok: true,
+    databaseAccess: '浏览器不直连数据库；原站通过路由配置 + openapi/ai-openapi 等后端接口返回业务数据和可访问页面。',
+    baseUrls: {
+      collabPlatformBaseUrl,
+      collabPublicBaseUrl
+    },
+    items: navigationCatalog
+  });
+});
+
 app.get('/api/deepseek/runtime', (_req, res) => {
   res.json({
     ok: true,
@@ -3539,10 +4218,12 @@ app.get('/api/datasets/debug', async (req, res) => {
 });
 
 async function buildBootstrapPayload({ includeRemote = false } = {}) {
+  const stored = readCustomerAiRealData();
+  const storedAvailable = hasCustomerAiRealData(stored);
   const payload = {
-    quickQuestions,
-    tickets,
-    conversationHistories,
+    quickQuestions: stored.quickQuestions.length ? stored.quickQuestions : quickQuestions,
+    tickets: stored.tickets.length ? stored.tickets : tickets,
+    conversationHistories: stored.conversationHistories.length ? stored.conversationHistories : conversationHistories,
     agents,
     supportStaff,
     serviceHours,
@@ -3552,7 +4233,10 @@ async function buildBootstrapPayload({ includeRemote = false } = {}) {
       enabled: includeRemote,
       ok: false,
       endpoints: customerAiEndpointRegistry.length,
-      remoteAiEnabled: isCustomerAiRemoteAiEnabled()
+      remoteAiEnabled: isCustomerAiRemoteAiEnabled(),
+      stored: storedAvailable,
+      storedAt: stored.updatedAt,
+      storedCounts: countCustomerAiRealData(stored)
     }
   };
 
@@ -3561,18 +4245,34 @@ async function buildBootstrapPayload({ includeRemote = false } = {}) {
   }
 
   const remote = await getCustomerAiRemoteBootstrap(false);
+  const latestStored = readCustomerAiRealData();
   return {
     ...payload,
-    quickQuestions: remote.quickQuestions.length ? remote.quickQuestions : payload.quickQuestions,
-    tickets: remote.tickets.length ? remote.tickets : payload.tickets,
-    conversationHistories: remote.histories.length ? remote.histories : payload.conversationHistories,
+    quickQuestions: remote.quickQuestions.length
+      ? remote.quickQuestions
+      : latestStored.quickQuestions.length
+        ? latestStored.quickQuestions
+        : payload.quickQuestions,
+    tickets: remote.tickets.length
+      ? remote.tickets
+      : latestStored.tickets.length
+        ? latestStored.tickets
+        : payload.tickets,
+    conversationHistories: remote.histories.length
+      ? remote.histories
+      : latestStored.conversationHistories.length
+        ? latestStored.conversationHistories
+        : payload.conversationHistories,
     customerAiRemote: {
       enabled: true,
       ok: remote.ok,
       endpoints: customerAiEndpointRegistry.length,
       remoteAiEnabled: isCustomerAiRemoteAiEnabled(),
       successfulReads: remote.results.filter((item) => item.ok).length,
-      failedReads: remote.results.filter((item) => !item.ok).length
+      failedReads: remote.results.filter((item) => !item.ok).length,
+      stored: hasCustomerAiRealData(latestStored),
+      storedAt: latestStored.updatedAt,
+      storedCounts: countCustomerAiRealData(latestStored)
     }
   };
 }
@@ -3669,6 +4369,9 @@ app.get('/api/customer-ai/remote/bootstrap', async (req, res) => {
   res.json({
     ok: remote.ok,
     enabled: isCustomerAiRemoteEnabled(force),
+    stored: remote.stored,
+    storedAt: remote.storedAt,
+    storedCounts: remote.storedCounts,
     quickQuestions: remote.quickQuestions,
     tickets: remote.tickets,
     conversationHistories: remote.histories,
@@ -3685,6 +4388,36 @@ app.get('/api/customer-ai/remote/bootstrap', async (req, res) => {
       error: result.error || '',
       dataPreview: typeof result.data === 'string' ? result.data.slice(0, 200) : result.data ? JSON.stringify(result.data).slice(0, 300) : ''
     }))
+  });
+});
+
+app.get('/api/customer-ai/real-data', (_req, res) => {
+  const stored = readCustomerAiRealData();
+  res.json({
+    ok: hasCustomerAiRealData(stored),
+    path: path.relative(process.cwd(), customerAiRealDataPath),
+    updatedAt: stored.updatedAt,
+    counts: countCustomerAiRealData(stored),
+    quickQuestions: stored.quickQuestions,
+    tickets: stored.tickets,
+    conversationHistories: stored.conversationHistories
+  });
+});
+
+app.post('/api/customer-ai/real-data/refresh', async (_req, res) => {
+  const remote = await getCustomerAiRemoteBootstrap(true);
+  const stored = readCustomerAiRealData();
+  res.json({
+    ok: hasCustomerAiRealData(stored),
+    remoteOk: remote.ok,
+    path: path.relative(process.cwd(), customerAiRealDataPath),
+    updatedAt: stored.updatedAt,
+    counts: countCustomerAiRealData(stored),
+    successfulReads: remote.results.filter((item) => item.ok).length,
+    failedReads: remote.results.filter((item) => !item.ok).length,
+    quickQuestions: stored.quickQuestions,
+    tickets: stored.tickets,
+    conversationHistories: stored.conversationHistories
   });
 });
 
@@ -3868,6 +4601,7 @@ app.post('/api/chat/message', async (req, res) => {
   const uploadedFiles = Array.isArray(files) ? files : [];
   const unsupportedFiles = uploadedFiles.filter((item) => !item?.difyFileId && Boolean(item?.originalName));
   const hasImageAttachment = uploadedFiles.some((item) => isImageMime(item?.mime));
+  const assistantVisibleFiles = hasImageAttachment ? uploadedFiles.slice(0, 3) : [];
   const userMessage = {
     id: makeId('msg'),
     role: 'user',
@@ -4019,6 +4753,7 @@ app.post('/api/chat/message', async (req, res) => {
       id: makeId('msg'),
       role: 'assistant',
       text: result.reply || '任务已执行。',
+      files: assistantVisibleFiles.length > 0 ? assistantVisibleFiles : undefined,
       category: result.category,
       priority: result.priority,
       agent: result.agent,
@@ -4162,6 +4897,7 @@ app.post('/api/chat/message', async (req, res) => {
         unsupportedFiles.length > 0 && source !== 'mock'
           ? `${result.reply}\n\n说明：检测到 ${unsupportedFiles.length} 个附件暂未进入模型识别，已先按文本上下文和附件信息处理。`
           : result.reply,
+      files: assistantVisibleFiles.length > 0 ? assistantVisibleFiles : undefined,
       category: result.category,
       priority: result.priority,
       agent: result.agent,
@@ -4219,7 +4955,11 @@ app.post('/api/chat/message', async (req, res) => {
             value: 'Dify files 多模态直传'
           }
         ],
-        actions: buildSupportActions(),
+        files: assistantVisibleFiles.length > 0 ? assistantVisibleFiles : undefined,
+        actions: buildContextActions({
+          query: text,
+          category: '附件图片文件识别'
+        }),
         agentTrace: workflowTrace,
         reasoning: buildReasoningSummary({
           trace: workflowTrace,
@@ -4274,6 +5014,7 @@ app.post('/api/chat/message', async (req, res) => {
       id: makeId('msg'),
       role: 'assistant',
       text: `${fallback.reply}${attachmentHint}`,
+      files: assistantVisibleFiles.length > 0 ? assistantVisibleFiles : undefined,
       category: fallback.category,
       priority: fallback.priority,
       agent: fallback.agent,
@@ -4300,12 +5041,15 @@ app.post('/api/chat/message', async (req, res) => {
   }
 });
 
-function buildUploadExtractedText(reqFile, primaryFileId, ocrText = '') {
+function buildUploadExtractedText(reqFile, primaryFileId, ocrText = '', documentText = '') {
   if (isImageMime(reqFile.mimetype)) {
     if (shouldUseLocalOcr() && ocrText) {
       return `图片已上传，多模态优先；本地 OCR 兜底已识别到以下文字：\n${ocrText}`;
     }
     return primaryFileId ? '图片已上传，将直接提交给多模态 AI 识别。' : '图片已上传，本地已接收；当前未拿到 Dify 文件 ID。';
+  }
+  if (documentText) {
+    return documentText;
   }
   return primaryFileId ? '文档已上传，可用于文件内容分析。' : '文档已上传，本地已接收；当前可先按文件名称和问题描述辅助处理。';
 }
@@ -4330,6 +5074,7 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
           uploadErrors: [sanitizeExternalError(difySettled.reason?.message || 'Dify 文件上传失败')]
         };
   const ocrText = shouldUseLocalOcr() && ocrSettled.status === 'fulfilled' ? ocrSettled.value : '';
+  const documentText = extractDocumentText(req.file);
   const responseFile = {
     id: makeId('file'),
     originalName: normalizeUploadFileName(req.file.originalname),
@@ -4337,7 +5082,7 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
     mime: req.file.mimetype,
     size: req.file.size,
     url: `/uploads/${req.file.filename}`,
-    extractedText: buildUploadExtractedText(req.file, difyResult.primaryFileId, ocrText),
+    extractedText: buildUploadExtractedText(req.file, difyResult.primaryFileId, ocrText, documentText),
     ocrText,
     analysisMode: isImageMime(req.file.mimetype) ? 'multimodal-direct' : 'file',
     difyFileId: difyResult.primaryFileId,
@@ -4399,7 +5144,7 @@ app.post('/api/tickets', async (req, res) => {
           id: makeId('history-msg'),
           role: 'staff',
           sender: ticket.currentStaff,
-          text: '您好，已收到您的问题，我会结合 AI 助手上下文继续处理。',
+          text: `您好，我是${ticket.currentStaff}，当前通过客户接入接口继续为您处理，我会结合 AI 助手上下文跟进。`,
           createdAt: ticket.serviceStartedAt
         }
       ]
@@ -4451,7 +5196,7 @@ app.post('/api/tickets/:id/messages', async (req, res) => {
     id: makeId('ticket-msg'),
     role: 'staff',
     sender: ticket.currentStaff,
-    text: `已收到，我会基于工单 ${ticket.id} 继续处理。${text.length > 36 ? `你补充的问题是：${text.slice(0, 36)}...` : `你补充的问题是：${text}`}`,
+    text: `我是${ticket.currentStaff}，已经通过客户接入接口收到你补充的问题：${text.length > 36 ? `“${text.slice(0, 36)}...”` : `“${text}”`}。我先核对当前账号与工单进度，有结果会直接在这里同步。`,
     createdAt: now
   };
 

@@ -1,0 +1,20 @@
+import { chromium } from 'playwright';
+const browser = await chromium.launch({ headless: true });
+const page = await browser.newPage({ viewport: { width: 1365, height: 768 } });
+await page.goto('http://localhost:5173', { waitUntil: 'domcontentloaded', timeout: 120000 });
+await page.waitForTimeout(1200);
+
+const title = await page.title();
+const links = await page.locator('a').allTextContents();
+const buttons = await page.locator('button').allTextContents();
+const headings = await page.locator('h1,h2,h3').allTextContents();
+const bodyText = await page.locator('body').innerText();
+console.log('TITLE:', title);
+console.log('LINK_COUNT:', links.length);
+console.log('BTN_COUNT:', buttons.length);
+console.log('HEADINGS:', headings);
+console.log('TOP_LINKS:', links.slice(0,60));
+console.log('TOP_BUTTONS:', buttons.slice(0,60));
+console.log('BODY_TEXT_SNIPPET:', bodyText.slice(0,1200));
+await page.close();
+await browser.close();

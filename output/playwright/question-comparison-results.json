@@ -1,0 +1,1054 @@
+{
+  "generatedAt": "2026-06-30T09:44:47.343Z",
+  "targets": [
+    {
+      "key": "prod",
+      "name": "线上",
+      "url": "https://customer-ai.laiyifen.com/scm-customer-web-static/?token=&pathName=home"
+    },
+    {
+      "key": "local",
+      "name": "本地",
+      "url": "http://localhost:5173/"
+    }
+  ],
+  "questions": [
+    {
+      "id": "q01",
+      "scenario": "账号登录",
+      "text": "手机号变更、忘记密码、忘记手机号怎么办？"
+    },
+    {
+      "id": "q02",
+      "scenario": "供应商入驻",
+      "text": "供应商入驻前需要准备哪些资料？"
+    },
+    {
+      "id": "q03",
+      "scenario": "供应商类型",
+      "text": "供应商类型如何选择？"
+    },
+    {
+      "id": "q04",
+      "scenario": "结算入口",
+      "text": "这个账号为什么看不到结算入口？"
+    },
+    {
+      "id": "q05",
+      "scenario": "合同授权",
+      "text": "合同授权卡在待确认，下一步怎么做？"
+    },
+    {
+      "id": "q06",
+      "scenario": "待办查询",
+      "text": "我这边还有哪些待办没处理？"
+    },
+    {
+      "id": "q07",
+      "scenario": "资质补传",
+      "text": "我想补传营业执照，在哪里操作？"
+    },
+    {
+      "id": "q08",
+      "scenario": "主体/SAP",
+      "text": "SAP 编码和主体名称不一致怎么办？"
+    },
+    {
+      "id": "q09",
+      "scenario": "人工客服",
+      "text": "我要转人工处理投诉，怎么接入客服？"
+    },
+    {
+      "id": "q10",
+      "scenario": "加盟资料",
+      "text": "我刚提交加盟资料，下一步做什么？"
+    },
+    {
+      "id": "q11",
+      "scenario": "商机跟进",
+      "text": "商机报名后多久会有人联系我？"
+    },
+    {
+      "id": "q12",
+      "scenario": "门店审核",
+      "text": "门店审核卡在待确认怎么办？"
+    },
+    {
+      "id": "q13",
+      "scenario": "经销订单",
+      "text": "本周待处理订单有哪些？"
+    },
+    {
+      "id": "q14",
+      "scenario": "库存预警",
+      "text": "库存预警在哪里看？"
+    },
+    {
+      "id": "q15",
+      "scenario": "图片识别",
+      "text": "我上传了页面截图，能帮我识别错误提示吗？"
+    },
+    {
+      "id": "q16",
+      "scenario": "图片附件识别",
+      "text": "请识别这张截图里的错误提示，并告诉我下一步怎么处理。"
+    }
+  ],
+  "results": [
+    {
+      "target": "prod",
+      "targetName": "线上",
+      "questionId": "q01",
+      "scenario": "账号登录",
+      "question": "手机号变更、忘记密码、忘记手机号怎么办？",
+      "ok": true,
+      "hit": "弱命中",
+      "answer": "17:40\n一、忘记密码找回\n账号已绑定可接收验证码的手机号：进入共创平台登录页点击【忘记密码】，再点击【原手机号找回密码】，按提示重置密码。\n账号已绑定但",
+      "afterQuestion": "17:40\n一、忘记密码找回\n账号已绑定可接收验证码的手机号：进入共创平台登录页点击【忘记密码】，再点击【原手机号找回密码】，按提示重置密码。\n账号已绑定但\n复制\n有帮助\n没帮助\n17:40\n转人工客服\n评价服务",
+      "actionButtons": [
+        "复制",
+        "有帮助",
+        "没帮助"
+      ],
+      "responseStatuses": [
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200
+      ],
+      "apiCallCount": 12,
+      "failedRequests": [],
+      "consoleMessages": [],
+      "screenshotPath": "output/playwright/questions-prod-q01.png"
+    },
+    {
+      "target": "local",
+      "targetName": "本地",
+      "questionId": "q01",
+      "scenario": "账号登录",
+      "question": "手机号变更、忘记密码、忘记手机号怎么办？",
+      "ok": true,
+      "hit": "已命中",
+      "answer": "当前请求已进入安全确认流程（分支：unknown）。\n\n风险等级：high\n确认模板：操作对象=账号权限与登录；影响范围=mcp；是否可回滚=通常可回滚\n\n原因：识别到高风险意图（变更/外部/导出/跳转相关）\n\n请回复“确认执行”以继续。\n\n处理确认\n问题类型：账号权限与登录 · P0\n当前需要进一步确认后才能继续处理。\n\n处理说明：执行分支需要用户确认。",
+      "afterQuestion": "当前请求已进入安全确认流程（分支：unknown）。\n\n风险等级：high\n确认模板：操作对象=账号权限与登录；影响范围=mcp；是否可回滚=通常可回滚\n\n原因：识别到高风险意图（变更/外部/导出/跳转相关）\n\n请回复“确认执行”以继续。\n\n处理确认\n问题类型：账号权限与登录 · P0\n当前需要进一步确认后才能继续处理。\n\n处理说明：执行分支需要用户确认。\n\n转人工客服\n评价服务\n点击麦克风开始语音转文字，首次会请求麦克风权限。",
+      "actionButtons": [],
+      "responseStatuses": [
+        200,
+        200,
+        201,
+        200
+      ],
+      "apiCallCount": 4,
+      "failedRequests": [],
+      "consoleMessages": [],
+      "screenshotPath": "output/playwright/questions-local-q01.png"
+    },
+    {
+      "target": "prod",
+      "targetName": "线上",
+      "questionId": "q02",
+      "scenario": "供应商入驻",
+      "question": "供应商入驻前需要准备哪些资料？",
+      "ok": true,
+      "hit": "已命中",
+      "answer": "17:40\n\n以供应商为例，入驻前需要准备营业执照、联系人名片等资料，具体可查看入驻准备的相关说明。详细资料可参考注册入驻详细操作手册：https://laiyifen.feishu",
+      "afterQuestion": "17:40\n\n以供应商为例，入驻前需要准备营业执照、联系人名片等资料，具体可查看入驻准备的相关说明。详细资料可参考注册入驻详细操作手册：https://laiyifen.feishu\n\n复制\n有帮助\n没帮助\n17:40\n转人工客服\n评价服务",
+      "actionButtons": [
+        "复制",
+        "有帮助",
+        "没帮助"
+      ],
+      "responseStatuses": [
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200
+      ],
+      "apiCallCount": 12,
+      "failedRequests": [
+        {
+          "url": "https://customer-ai.laiyifen.com/scm-customer-core-server/sse/getAiMessage/ZD-20260630-000036",
+          "failure": "net::ERR_ABORTED"
+        }
+      ],
+      "consoleMessages": [],
+      "screenshotPath": "output/playwright/questions-prod-q02.png"
+    },
+    {
+      "target": "local",
+      "targetName": "本地",
+      "questionId": "q02",
+      "scenario": "供应商入驻",
+      "question": "供应商入驻前需要准备哪些资料？",
+      "ok": true,
+      "hit": "已命中",
+      "answer": "供应商入驻前需要准备以下资料：1.企业基本信息-营业执照副本（需加盖公章）-法人身份证正反面扫描件-企业开户许可证或银行对公账户信息2.资质相关材料-行业相关资质证书（如食品经营许可证、生产许可证等，根据产品类别提供）-质量管理体系认证文件（如ISO9001、HACCP等）3.授权与合作证明-授权书（如有代理品牌需提供品牌方授权）-过往合作案例或合同复印件（可选，但有助于审核加速）4.其他补充材料-企业简介及产品介绍文档-仓库或生产基地照片（如有）注意事项：-所有文件需清晰、完整，建议使用PDF格式上传。-具体要求可能因产品品类或合作模式调整，请以系统提示为准。-若资料不全或不符合要求，审核可能会退回，请及时补充完善。如需进一步确认资料清单或提交入口，请通过“今日待办”或“合同管理”模块查看，或联系人工客服协助核验。",
+      "afterQuestion": "供应商入驻前需要准备以下资料：1.企业基本信息-营业执照副本（需加盖公章）-法人身份证正反面扫描件-企业开户许可证或银行对公账户信息2.资质相关材料-行业相关资质证书（如食品经营许可证、生产许可证等，根据产品类别提供）-质量管理体系认证文件（如ISO9001、HACCP等）3.授权与合作证明-授权书（如有代理品牌需提供品牌方授权）-过往合作案例或合同复印件（可选，但有助于审核加速）4.其他补充材料-企业简介及产品介绍文档-仓库或生产基地照片（如有）注意事项：-所有文件需清晰、完整，建议使用PDF格式上传。-具体要求可能因产品品类或合作模式调整，请以系统提示为准。-若资料不全或不符合要求，审核可能会退回，请及时补充完善。如需进一步确认资料清单或提交入口，请通过“今日待办”或“合同管理”模块查看，或联系人工客服协助核验。\n\nAI 处理结果\n问题类型：供应商入驻 · P1\n已完成问题判断，可以继续处理当前请求。\n打开供应商资料页\n生成客服工单\n转人工客服\n评价服务\n点击麦克风开始语音转文字，首次会请求麦克风权限。",
+      "actionButtons": [
+        "打开供应商资料页",
+        "生成客服工单"
+      ],
+      "responseStatuses": [
+        200,
+        200,
+        201,
+        200
+      ],
+      "apiCallCount": 4,
+      "failedRequests": [],
+      "consoleMessages": [],
+      "screenshotPath": "output/playwright/questions-local-q02.png"
+    },
+    {
+      "target": "prod",
+      "targetName": "线上",
+      "questionId": "q03",
+      "scenario": "供应商类型",
+      "question": "供应商类型如何选择？",
+      "ok": true,
+      "hit": "弱命中",
+      "answer": "17:41\n供应商类型说明：\n品牌商/厂商：与来伊份合作的产品为自有品牌或自有",
+      "afterQuestion": "17:41\n供应商类型说明：\n品牌商/厂商：与来伊份合作的产品为自有品牌或自有\n复制\n有帮助\n没帮助\n17:41\n转人工客服\n评价服务",
+      "actionButtons": [
+        "复制",
+        "有帮助",
+        "没帮助"
+      ],
+      "responseStatuses": [
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200
+      ],
+      "apiCallCount": 12,
+      "failedRequests": [],
+      "consoleMessages": [],
+      "screenshotPath": "output/playwright/questions-prod-q03.png"
+    },
+    {
+      "target": "local",
+      "targetName": "本地",
+      "questionId": "q03",
+      "scenario": "供应商类型",
+      "question": "供应商类型如何选择？",
+      "ok": true,
+      "hit": "已命中",
+      "answer": "供应商类型选择需根据实际业务需求确定。常见供应商类型包括原材料供应商、设备供应商、包装材料供应商等。操作步骤：1.登录共创平台后，进入【供应商管理】模块。2.在【供应商信息】页面，点击“供应商类型”下拉菜单。3.根据自身业务属性选择对应类型（如原材料、设备等）。4.确认选择后点击“保存”。注意事项：-若未看到供应商类型选项，请确认是否已完成入驻流程或联系管理员确认权限。-如需变更供应商类型，建议通过工单提交申请，由后台审核处理。如需进一步协助，请提供具体业务场景以便更精准指导。",
+      "afterQuestion": "供应商类型选择需根据实际业务需求确定。常见供应商类型包括原材料供应商、设备供应商、包装材料供应商等。操作步骤：1.登录共创平台后，进入【供应商管理】模块。2.在【供应商信息】页面，点击“供应商类型”下拉菜单。3.根据自身业务属性选择对应类型（如原材料、设备等）。4.确认选择后点击“保存”。注意事项：-若未看到供应商类型选项，请确认是否已完成入驻流程或联系管理员确认权限。-如需变更供应商类型，建议通过工单提交申请，由后台审核处理。如需进一步协助，请提供具体业务场景以便更精准指导。\n\nAI 处理结果\n问题类型：供应商入驻 · P1\n已完成问题判断，可以继续处理当前请求。\n打开供应商资料页\n生成客服工单\n转人工客服\n评价服务\n点击麦克风开始语音转文字，首次会请求麦克风权限。",
+      "actionButtons": [
+        "打开供应商资料页",
+        "生成客服工单"
+      ],
+      "responseStatuses": [
+        200,
+        200,
+        201,
+        200
+      ],
+      "apiCallCount": 4,
+      "failedRequests": [],
+      "consoleMessages": [],
+      "screenshotPath": "output/playwright/questions-local-q03.png"
+    },
+    {
+      "target": "prod",
+      "targetName": "线上",
+      "questionId": "q04",
+      "scenario": "结算入口",
+      "question": "这个账号为什么看不到结算入口？",
+      "ok": true,
+      "hit": "未命中",
+      "answer": "17:41\n\n非常抱歉，没有找到相关问题的答案。\n\n建议您点击",
+      "afterQuestion": "17:41\n\n非常抱歉，没有找到相关问题的答案。\n\n建议您点击\n复制\n有帮助\n没帮助\n17:41\n转人工客服\n评价服务",
+      "actionButtons": [
+        "复制",
+        "有帮助",
+        "没帮助"
+      ],
+      "responseStatuses": [
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200
+      ],
+      "apiCallCount": 12,
+      "failedRequests": [
+        {
+          "url": "https://customer-ai.laiyifen.com/scm-customer-core-server/sse/getAiMessage/ZD-20260630-000038",
+          "failure": "net::ERR_ABORTED"
+        }
+      ],
+      "consoleMessages": [],
+      "screenshotPath": "output/playwright/questions-prod-q04.png"
+    },
+    {
+      "target": "local",
+      "targetName": "本地",
+      "questionId": "q04",
+      "scenario": "结算入口",
+      "question": "这个账号为什么看不到结算入口？",
+      "ok": true,
+      "hit": "已命中",
+      "answer": "您好，供应商账号看不到结算入口可能与权限设置或流程未完成有关。以下是常见排查步骤：1.确认登录身份：请确保当前登录的是供应商主账号，而非员工或经销商账号。2.检查权限：通过“合同管理”页面查看是否有结算相关的合同已生效并授权。若无相关合同，请联系业务对接人补充合同信息。3.核验流程状态：进入“今日待办”页面，查看是否存在未完成的结算前置流程（如合同审批、授权等）。4.系统入口：结算入口通常位于“财务中心”>“结算管理”。若此菜单未显示，请确认是否已完成供应商入驻及合同授权流程。如以上步骤无法解决问题，建议您通过“人工客服”转接后台核实权限状态或流程完整性。人工客服服务时间为周一至周五09:00-18:00。",
+      "afterQuestion": "您好，供应商账号看不到结算入口可能与权限设置或流程未完成有关。以下是常见排查步骤：1.确认登录身份：请确保当前登录的是供应商主账号，而非员工或经销商账号。2.检查权限：通过“合同管理”页面查看是否有结算相关的合同已生效并授权。若无相关合同，请联系业务对接人补充合同信息。3.核验流程状态：进入“今日待办”页面，查看是否存在未完成的结算前置流程（如合同审批、授权等）。4.系统入口：结算入口通常位于“财务中心”>“结算管理”。若此菜单未显示，请确认是否已完成供应商入驻及合同授权流程。如以上步骤无法解决问题，建议您通过“人工客服”转接后台核实权限状态或流程完整性。人工客服服务时间为周一至周五09:00-18:00。\n\nAI 处理结果\n问题类型：账号权限与登录 · P1\n已完成问题判断，可以继续处理当前请求。\n打开结算页面\n生成客服工单\n转人工客服\n评价服务\n点击麦克风开始语音转文字，首次会请求麦克风权限。",
+      "actionButtons": [
+        "打开结算页面",
+        "生成客服工单"
+      ],
+      "responseStatuses": [
+        200,
+        200,
+        201,
+        200
+      ],
+      "apiCallCount": 4,
+      "failedRequests": [],
+      "consoleMessages": [],
+      "screenshotPath": "output/playwright/questions-local-q04.png"
+    },
+    {
+      "target": "prod",
+      "targetName": "线上",
+      "questionId": "q05",
+      "scenario": "合同授权",
+      "question": "合同授权卡在待确认，下一步怎么做？",
+      "ok": true,
+      "hit": "未命中",
+      "answer": "17:41\n\n非常抱歉，没有找到相关问题的答案。\n\n建议您点击「转人工」进行在线咨询；\n如果您有任何意见或建议，也可以",
+      "afterQuestion": "17:41\n\n非常抱歉，没有找到相关问题的答案。\n\n建议您点击「转人工」进行在线咨询；\n如果您有任何意见或建议，也可以\n复制\n有帮助\n没帮助\n17:41\n转人工客服\n评价服务",
+      "actionButtons": [
+        "复制",
+        "有帮助",
+        "没帮助"
+      ],
+      "responseStatuses": [
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200
+      ],
+      "apiCallCount": 12,
+      "failedRequests": [
+        {
+          "url": "https://customer-ai.laiyifen.com/scm-customer-core-server/sse/getAiMessage/ZD-20260630-000039",
+          "failure": "net::ERR_ABORTED"
+        }
+      ],
+      "consoleMessages": [],
+      "screenshotPath": "output/playwright/questions-prod-q05.png"
+    },
+    {
+      "target": "local",
+      "targetName": "本地",
+      "questionId": "q05",
+      "scenario": "合同授权",
+      "question": "合同授权卡在待确认，下一步怎么做？",
+      "ok": true,
+      "hit": "已命中",
+      "answer": "您好，供应商用户：合同授权卡处于“待确认”状态时，建议您先确认以下几点：1.核对信息：请确保填写的联系人姓名、电话等信息准确无误。2.权限检查：若未看到相关入口或操作按钮，请确认是否已完成入驻流程并获得相应权限。如权限不足，可能需联系平台管理员。下一步操作建议：-登录共创Web后台，进入【合同管理】>【合同授权】模块查看具体状态。-若仍无法操作或状态未更新，请通过【今日待办】或【工单中心】提交问题，由人工客服协助核验。如需进一步帮助，请提供订单/合同编号以便快速定位问题。人工客服服务时间为周一至周五09:00-18:00。",
+      "afterQuestion": "您好，供应商用户：合同授权卡处于“待确认”状态时，建议您先确认以下几点：1.核对信息：请确保填写的联系人姓名、电话等信息准确无误。2.权限检查：若未看到相关入口或操作按钮，请确认是否已完成入驻流程并获得相应权限。如权限不足，可能需联系平台管理员。下一步操作建议：-登录共创Web后台，进入【合同管理】>【合同授权】模块查看具体状态。-若仍无法操作或状态未更新，请通过【今日待办】或【工单中心】提交问题，由人工客服协助核验。如需进一步帮助，请提供订单/合同编号以便快速定位问题。人工客服服务时间为周一至周五09:00-18:00。\n\nAI 处理结果\n问题类型：合同授权与结算 · P1\n已完成问题判断，可以继续处理当前请求。\n打开合同授权页面\n生成客服工单\n转人工客服\n评价服务\n点击麦克风开始语音转文字，首次会请求麦克风权限。",
+      "actionButtons": [
+        "打开合同授权页面",
+        "生成客服工单"
+      ],
+      "responseStatuses": [
+        200,
+        200,
+        201,
+        200
+      ],
+      "apiCallCount": 4,
+      "failedRequests": [],
+      "consoleMessages": [],
+      "screenshotPath": "output/playwright/questions-local-q05.png"
+    },
+    {
+      "target": "prod",
+      "targetName": "线上",
+      "questionId": "q06",
+      "scenario": "待办查询",
+      "question": "我这边还有哪些待办没处理？",
+      "ok": true,
+      "hit": "未命中",
+      "answer": "17:41\n\n非常抱歉，没有找到相关问题的答案。\n\n建议您点击「转人工」进行在线咨询；\n如果您有",
+      "afterQuestion": "17:41\n\n非常抱歉，没有找到相关问题的答案。\n\n建议您点击「转人工」进行在线咨询；\n如果您有\n复制\n有帮助\n没帮助\n17:41\n转人工客服\n评价服务",
+      "actionButtons": [
+        "复制",
+        "有帮助",
+        "没帮助"
+      ],
+      "responseStatuses": [
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200
+      ],
+      "apiCallCount": 12,
+      "failedRequests": [],
+      "consoleMessages": [],
+      "screenshotPath": "output/playwright/questions-prod-q06.png"
+    },
+    {
+      "target": "local",
+      "targetName": "本地",
+      "questionId": "q06",
+      "scenario": "待办查询",
+      "question": "我这边还有哪些待办没处理？",
+      "ok": true,
+      "hit": "已命中",
+      "answer": "您好，根据您当前的供应商账号查询，今日待办事项暂无数据。建议您确认是否已完成今日所有待处理任务，或检查账号权限是否正常。如需进一步协助，可提交工单或在工作时间联系人工客服。\n\n模型: deepseek-v4-flash\n数据来源: 原站业务接口（openapi/ai-openapi），不是浏览器直连数据库",
+      "afterQuestion": "您好，根据您当前的供应商账号查询，今日待办事项暂无数据。建议您确认是否已完成今日所有待处理任务，或检查账号权限是否正常。如需进一步协助，可提交工单或在工作时间联系人工客服。\n\n模型: deepseek-v4-flash\n数据来源: 原站业务接口（openapi/ai-openapi），不是浏览器直连数据库\nAI 处理结果\n问题类型：业务查询 · P1\n已完成问题判断，可以继续处理当前请求。\n打开今日待办\n转人工客服\n转人工客服\n评价服务\n点击麦克风开始语音转文字，首次会请求麦克风权限。",
+      "actionButtons": [
+        "打开今日待办"
+      ],
+      "responseStatuses": [
+        200,
+        200,
+        201,
+        200
+      ],
+      "apiCallCount": 4,
+      "failedRequests": [],
+      "consoleMessages": [],
+      "screenshotPath": "output/playwright/questions-local-q06.png"
+    },
+    {
+      "target": "prod",
+      "targetName": "线上",
+      "questionId": "q07",
+      "scenario": "资质补传",
+      "question": "我想补传营业执照，在哪里操作？",
+      "ok": true,
+      "hit": "未命中",
+      "answer": "17:41\n\n非常抱歉，没有找到相关问题的答案。\n\n建议您点击「转人工」进行在线咨询；\n2",
+      "afterQuestion": "17:41\n\n非常抱歉，没有找到相关问题的答案。\n\n建议您点击「转人工」进行在线咨询；\n2\n复制\n有帮助\n没帮助\n17:41\n转人工客服\n评价服务",
+      "actionButtons": [
+        "复制",
+        "有帮助",
+        "没帮助"
+      ],
+      "responseStatuses": [
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200
+      ],
+      "apiCallCount": 12,
+      "failedRequests": [],
+      "consoleMessages": [],
+      "screenshotPath": "output/playwright/questions-prod-q07.png"
+    },
+    {
+      "target": "local",
+      "targetName": "本地",
+      "questionId": "q07",
+      "scenario": "资质补传",
+      "question": "我想补传营业执照，在哪里操作？",
+      "ok": true,
+      "hit": "已命中",
+      "answer": "您好，供应商用户，您可以通过以下步骤补传营业执照：1.登录共创平台账号。2.进入“我的资料”页面。3.找到“资质管理”或“企业信息”模块。4.点击“补充材料”或“上传附件”，选择营业执照文件进行上传。如果在上述路径中未找到相关入口，可能是权限不足或流程未完成。建议您通过“今日待办”确认是否有待处理事项，或联系人工客服核实具体原因。人工客服服务时间为周一至周五09:00-18:00，如需进一步协助，请提供订单/合同编号以便核验。",
+      "afterQuestion": "您好，供应商用户，您可以通过以下步骤补传营业执照：1.登录共创平台账号。2.进入“我的资料”页面。3.找到“资质管理”或“企业信息”模块。4.点击“补充材料”或“上传附件”，选择营业执照文件进行上传。如果在上述路径中未找到相关入口，可能是权限不足或流程未完成。建议您通过“今日待办”确认是否有待处理事项，或联系人工客服核实具体原因。人工客服服务时间为周一至周五09:00-18:00，如需进一步协助，请提供订单/合同编号以便核验。\n\nAI 处理结果\n问题类型：菜单定位与操作引导 · P1\n已完成问题判断，可以继续处理当前请求。\n打开供应商资料页\n生成客服工单\n转人工客服\n评价服务\n点击麦克风开始语音转文字，首次会请求麦克风权限。",
+      "actionButtons": [
+        "打开供应商资料页",
+        "生成客服工单"
+      ],
+      "responseStatuses": [
+        200,
+        200,
+        201,
+        200
+      ],
+      "apiCallCount": 4,
+      "failedRequests": [],
+      "consoleMessages": [],
+      "screenshotPath": "output/playwright/questions-local-q07.png"
+    },
+    {
+      "target": "prod",
+      "targetName": "线上",
+      "questionId": "q08",
+      "scenario": "主体/SAP",
+      "question": "SAP 编码和主体名称不一致怎么办？",
+      "ok": true,
+      "hit": "未命中",
+      "answer": "17:41\n\n非常抱歉，没有找到相关问题的答案。\n\n建议您点击「转人工」进行在线咨询；\n如果您有任何意见或建议，也可以创建在线工单，我们会尽快处理和回复。",
+      "afterQuestion": "17:41\n\n非常抱歉，没有找到相关问题的答案。\n\n建议您点击「转人工」进行在线咨询；\n如果您有任何意见或建议，也可以创建在线工单，我们会尽快处理和回复。\n复制\n有帮助\n没帮助\n17:41\n转人工客服\n评价服务",
+      "actionButtons": [
+        "复制",
+        "有帮助",
+        "没帮助"
+      ],
+      "responseStatuses": [
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200
+      ],
+      "apiCallCount": 12,
+      "failedRequests": [],
+      "consoleMessages": [],
+      "screenshotPath": "output/playwright/questions-prod-q08.png"
+    },
+    {
+      "target": "local",
+      "targetName": "本地",
+      "questionId": "q08",
+      "scenario": "主体/SAP",
+      "question": "SAP 编码和主体名称不一致怎么办？",
+      "ok": true,
+      "hit": "已命中",
+      "answer": "您好，针对SAP编码和主体名称不一致的问题，建议您先确认以下信息：1.检查当前登录账号权限：-确保您已登录正确的供应商账号，并具备查看SAP编码相关数据的权限。-如果不确定权限，请联系平台管理员核实。2.核对主体名称与编码对应关系：-登录共创平台后，进入“合同管理”模块，查看相关合同或协议中的主体名称是否与SAP编码一致。-若发现不一致，需通过“今日待办”任务或联系人工客服确认具体原因。3.补充信息：-请提供具体的SAP编码及主体名称，以便进一步协助排查问题。-如涉及系统异常或数据同步问题，需通过后台权限校验或转人工核验处理。如以上步骤无法解决，建议您通过“在线客服”或拨打人工服务热线（周一至周五09:00-18:00）获取进一步支持。",
+      "afterQuestion": "您好，针对SAP编码和主体名称不一致的问题，建议您先确认以下信息：1.检查当前登录账号权限：-确保您已登录正确的供应商账号，并具备查看SAP编码相关数据的权限。-如果不确定权限，请联系平台管理员核实。2.核对主体名称与编码对应关系：-登录共创平台后，进入“合同管理”模块，查看相关合同或协议中的主体名称是否与SAP编码一致。-若发现不一致，需通过“今日待办”任务或联系人工客服确认具体原因。3.补充信息：-请提供具体的SAP编码及主体名称，以便进一步协助排查问题。-如涉及系统异常或数据同步问题，需通过后台权限校验或转人工核验处理。如以上步骤无法解决，建议您通过“在线客服”或拨打人工服务热线（周一至周五09:00-18:00）获取进一步支持。\n\nAI 处理结果\n问题类型：其他问题 · P1\n当前请求风险较高，系统已采用谨慎处理方式。\n打开供应商资料页\n生成客服工单\n转人工客服\n评价服务\n点击麦克风开始语音转文字，首次会请求麦克风权限。",
+      "actionButtons": [
+        "打开供应商资料页",
+        "生成客服工单"
+      ],
+      "responseStatuses": [
+        200,
+        200,
+        201,
+        200
+      ],
+      "apiCallCount": 4,
+      "failedRequests": [],
+      "consoleMessages": [],
+      "screenshotPath": "output/playwright/questions-local-q08.png"
+    },
+    {
+      "target": "prod",
+      "targetName": "线上",
+      "questionId": "q09",
+      "scenario": "人工客服",
+      "question": "我要转人工处理投诉，怎么接入客服？",
+      "ok": true,
+      "hit": "弱命中",
+      "answer": "17:42\n您好，正在为您转接人工客服[客服丁]，请稍候~\n感谢您的耐心等待，人工客服[客服丁]为您服务。",
+      "afterQuestion": "17:42\n您好，正在为您转接人工客服[客服丁]，请稍候~\n感谢您的耐心等待，人工客服[客服丁]为您服务。\n转人工客服\n评价服务",
+      "actionButtons": [],
+      "responseStatuses": [
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200
+      ],
+      "apiCallCount": 12,
+      "failedRequests": [],
+      "consoleMessages": [],
+      "screenshotPath": "output/playwright/questions-prod-q09.png"
+    },
+    {
+      "target": "local",
+      "targetName": "本地",
+      "questionId": "q09",
+      "scenario": "人工客服",
+      "question": "我要转人工处理投诉，怎么接入客服？",
+      "ok": true,
+      "hit": "已命中",
+      "answer": "已触发转人工并生成工单 TK-20260630-004，已推送至飞书。\n\n当前处理人：共创客服-小周，建议在服务端保持上下文继续。\n\n飞书通知状态：已通知。\n\n工单编号: TK-20260630-004",
+      "afterQuestion": "已触发转人工并生成工单 TK-20260630-004，已推送至飞书。\n\n当前处理人：共创客服-小周，建议在服务端保持上下文继续。\n\n飞书通知状态：已通知。\n\n工单编号: TK-20260630-004\nAI 处理结果\n问题类型：工单与人工客服 · P0\n已完成问题判断，可以继续处理当前请求。\n查看工单\n转人工客服\n评价服务\n点击麦克风开始语音转文字，首次会请求麦克风权限。",
+      "actionButtons": [
+        "查看工单"
+      ],
+      "responseStatuses": [
+        200,
+        200,
+        201,
+        200
+      ],
+      "apiCallCount": 4,
+      "failedRequests": [],
+      "consoleMessages": [],
+      "screenshotPath": "output/playwright/questions-local-q09.png"
+    },
+    {
+      "target": "prod",
+      "targetName": "线上",
+      "questionId": "q10",
+      "scenario": "加盟资料",
+      "question": "我刚提交加盟资料，下一步做什么？",
+      "ok": true,
+      "hit": "未命中",
+      "answer": "17:42\n\n非常抱歉，没有找到相关问题的答案。\n\n建议您点击「转人工」进行在线咨询；\n如果您有任何意见或建议，也可以创建在线工单，我们会尽快处",
+      "afterQuestion": "17:42\n\n非常抱歉，没有找到相关问题的答案。\n\n建议您点击「转人工」进行在线咨询；\n如果您有任何意见或建议，也可以创建在线工单，我们会尽快处\n复制\n有帮助\n没帮助\n17:42\n转人工客服\n评价服务",
+      "actionButtons": [
+        "复制",
+        "有帮助",
+        "没帮助"
+      ],
+      "responseStatuses": [
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200
+      ],
+      "apiCallCount": 12,
+      "failedRequests": [],
+      "consoleMessages": [],
+      "screenshotPath": "output/playwright/questions-prod-q10.png"
+    },
+    {
+      "target": "local",
+      "targetName": "本地",
+      "questionId": "q10",
+      "scenario": "加盟资料",
+      "question": "我刚提交加盟资料，下一步做什么？",
+      "ok": true,
+      "hit": "已命中",
+      "answer": "当前请求已进入安全确认流程（分支：task）。\n\n【任务执行预览】\n动作：提交\n对象：未知对象\n编号：未识别\n参数：用户侧已确认参数来自上下文，待确认是否执行。\n风险：中高（涉及变更/写入或状态修改）\n\n请补充关键参数：目标对象。\n\n风险等级：medium\n确认模板：操作对象=加盟商商机与门店运营；影响范围=mcp；是否可回滚=通常可回滚\n\n原因：任务执行缺少关键参数\n\n请回复“确认执行”以继续。\n\n处理确认\n问题类型：加盟商商机与门店运营 · P1\n当前需要进一步确认后才能继续处理。\n\n处理说明：任务执行缺少关键参数",
+      "afterQuestion": "当前请求已进入安全确认流程（分支：task）。\n\n【任务执行预览】\n动作：提交\n对象：未知对象\n编号：未识别\n参数：用户侧已确认参数来自上下文，待确认是否执行。\n风险：中高（涉及变更/写入或状态修改）\n\n请补充关键参数：目标对象。\n\n风险等级：medium\n确认模板：操作对象=加盟商商机与门店运营；影响范围=mcp；是否可回滚=通常可回滚\n\n原因：任务执行缺少关键参数\n\n请回复“确认执行”以继续。\n\n处理确认\n问题类型：加盟商商机与门店运营 · P1\n当前需要进一步确认后才能继续处理。\n\n处理说明：任务执行缺少关键参数\n\n转人工客服\n评价服务\n点击麦克风开始语音转文字，首次会请求麦克风权限。",
+      "actionButtons": [],
+      "responseStatuses": [
+        200,
+        200,
+        201,
+        200
+      ],
+      "apiCallCount": 4,
+      "failedRequests": [],
+      "consoleMessages": [],
+      "screenshotPath": "output/playwright/questions-local-q10.png"
+    },
+    {
+      "target": "prod",
+      "targetName": "线上",
+      "questionId": "q11",
+      "scenario": "商机跟进",
+      "question": "商机报名后多久会有人联系我？",
+      "ok": true,
+      "hit": "未命中",
+      "answer": "17:42\n\n非常抱歉，没有找到相关问题的答案。\n\n建议您点击「转人工」进行在线咨询；",
+      "afterQuestion": "17:42\n\n非常抱歉，没有找到相关问题的答案。\n\n建议您点击「转人工」进行在线咨询；\n复制\n有帮助\n没帮助\n17:42\n转人工客服\n评价服务",
+      "actionButtons": [
+        "复制",
+        "有帮助",
+        "没帮助"
+      ],
+      "responseStatuses": [
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200
+      ],
+      "apiCallCount": 12,
+      "failedRequests": [
+        {
+          "url": "https://customer-ai.laiyifen.com/scm-customer-core-server/sse/getAiMessage/ZD-20260630-000045",
+          "failure": "net::ERR_ABORTED"
+        }
+      ],
+      "consoleMessages": [],
+      "screenshotPath": "output/playwright/questions-prod-q11.png"
+    },
+    {
+      "target": "local",
+      "targetName": "本地",
+      "questionId": "q11",
+      "scenario": "商机跟进",
+      "question": "商机报名后多久会有人联系我？",
+      "ok": true,
+      "hit": "已命中",
+      "answer": "商机报名后，通常会在1-3个工作日内由我们的商务团队联系您。具体时间可能会根据报名人数和业务繁忙程度有所调整。如果您希望加快联系速度，建议您补充以下信息以便我们更好地跟进：1.您的公司名称及主营业务2.您希望通过此次合作达成的目标3.是否有特殊需求或优先事项补充完整信息后，我们将尽快安排专人与您联系。如有其他疑问，欢迎随时告知。",
+      "afterQuestion": "商机报名后，通常会在1-3个工作日内由我们的商务团队联系您。具体时间可能会根据报名人数和业务繁忙程度有所调整。如果您希望加快联系速度，建议您补充以下信息以便我们更好地跟进：1.您的公司名称及主营业务2.您希望通过此次合作达成的目标3.是否有特殊需求或优先事项补充完整信息后，我们将尽快安排专人与您联系。如有其他疑问，欢迎随时告知。\n\nAI 处理结果\n问题类型：加盟商商机与门店运营 · P1\n已完成问题判断，可以继续处理当前请求。\n打开商机报名页\n生成客服工单\n转人工客服\n评价服务\n点击麦克风开始语音转文字，首次会请求麦克风权限。",
+      "actionButtons": [
+        "打开商机报名页",
+        "生成客服工单"
+      ],
+      "responseStatuses": [
+        200,
+        200,
+        201,
+        200
+      ],
+      "apiCallCount": 4,
+      "failedRequests": [],
+      "consoleMessages": [],
+      "screenshotPath": "output/playwright/questions-local-q11.png"
+    },
+    {
+      "target": "prod",
+      "targetName": "线上",
+      "questionId": "q12",
+      "scenario": "门店审核",
+      "question": "门店审核卡在待确认怎么办？",
+      "ok": true,
+      "hit": "未命中",
+      "answer": "17:42\n\n非常抱歉，没有找到相关问题的答案。\n\n建议您点击「转人工」进行在线咨询；\n如果您有任何意见或建议，也可以创建在线工单，我们会尽快处理和回复。",
+      "afterQuestion": "17:42\n\n非常抱歉，没有找到相关问题的答案。\n\n建议您点击「转人工」进行在线咨询；\n如果您有任何意见或建议，也可以创建在线工单，我们会尽快处理和回复。\n复制\n有帮助\n没帮助\n17:42\n转人工客服\n评价服务",
+      "actionButtons": [
+        "复制",
+        "有帮助",
+        "没帮助"
+      ],
+      "responseStatuses": [
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200
+      ],
+      "apiCallCount": 12,
+      "failedRequests": [],
+      "consoleMessages": [],
+      "screenshotPath": "output/playwright/questions-prod-q12.png"
+    },
+    {
+      "target": "local",
+      "targetName": "本地",
+      "questionId": "q12",
+      "scenario": "门店审核",
+      "question": "门店审核卡在待确认怎么办？",
+      "ok": true,
+      "hit": "已命中",
+      "answer": "门店审核卡在“待确认”状态，可能是由于信息不完整或需要补充材料。以下是操作步骤：1.登录共创平台，进入【合同管理】-【门店审核】模块。2.查看具体门店的审核详情，确认是否有未完成的步骤或需补充的信息。3.如有缺失，请根据提示上传相关材料并提交。如果仍无法解决，建议通过【今日待办】查看是否有其他待处理事项，或联系人工客服（服务时间：周一至周五09:00-18:00）进一步核实。",
+      "afterQuestion": "门店审核卡在“待确认”状态，可能是由于信息不完整或需要补充材料。以下是操作步骤：1.登录共创平台，进入【合同管理】-【门店审核】模块。2.查看具体门店的审核详情，确认是否有未完成的步骤或需补充的信息。3.如有缺失，请根据提示上传相关材料并提交。如果仍无法解决，建议通过【今日待办】查看是否有其他待处理事项，或联系人工客服（服务时间：周一至周五09:00-18:00）进一步核实。\n\nAI 处理结果\n问题类型：加盟商商机与门店运营 · P1\n已完成问题判断，可以继续处理当前请求。\n打开今日待办\n生成客服工单\n转人工客服\n评价服务\n点击麦克风开始语音转文字，首次会请求麦克风权限。",
+      "actionButtons": [
+        "打开今日待办",
+        "生成客服工单"
+      ],
+      "responseStatuses": [
+        200,
+        200,
+        201,
+        200
+      ],
+      "apiCallCount": 4,
+      "failedRequests": [],
+      "consoleMessages": [],
+      "screenshotPath": "output/playwright/questions-local-q12.png"
+    },
+    {
+      "target": "prod",
+      "targetName": "线上",
+      "questionId": "q13",
+      "scenario": "经销订单",
+      "question": "本周待处理订单有哪些？",
+      "ok": true,
+      "hit": "未命中",
+      "answer": "17:42\n\n非常抱歉，没有找到相关问题的答案。\n1",
+      "afterQuestion": "17:42\n\n非常抱歉，没有找到相关问题的答案。\n1\n\n复制\n有帮助\n没帮助\n17:42\n转人工客服\n评价服务",
+      "actionButtons": [
+        "复制",
+        "有帮助",
+        "没帮助"
+      ],
+      "responseStatuses": [
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200
+      ],
+      "apiCallCount": 12,
+      "failedRequests": [],
+      "consoleMessages": [],
+      "screenshotPath": "output/playwright/questions-prod-q13.png"
+    },
+    {
+      "target": "local",
+      "targetName": "本地",
+      "questionId": "q13",
+      "scenario": "经销订单",
+      "question": "本周待处理订单有哪些？",
+      "ok": true,
+      "hit": "已命中",
+      "answer": "您好，根据您的查询，目前系统中暂无待办事项或可读数据。建议您检查筛选条件或稍后刷新查看。如需进一步帮助，可提交工单或在工作时间联系人工客服。\n\n模型: deepseek-v4-flash\n数据来源: 原站业务接口（openapi/ai-openapi），不是浏览器直连数据库",
+      "afterQuestion": "您好，根据您的查询，目前系统中暂无待办事项或可读数据。建议您检查筛选条件或稍后刷新查看。如需进一步帮助，可提交工单或在工作时间联系人工客服。\n\n模型: deepseek-v4-flash\n数据来源: 原站业务接口（openapi/ai-openapi），不是浏览器直连数据库\nAI 处理结果\n问题类型：经销商业务问题 · P1\n已完成问题判断，可以继续处理当前请求。\n打开今日待办\n转人工客服\n转人工客服\n评价服务\n点击麦克风开始语音转文字，首次会请求麦克风权限。",
+      "actionButtons": [
+        "打开今日待办"
+      ],
+      "responseStatuses": [
+        200,
+        200,
+        201,
+        200
+      ],
+      "apiCallCount": 4,
+      "failedRequests": [],
+      "consoleMessages": [],
+      "screenshotPath": "output/playwright/questions-local-q13.png"
+    },
+    {
+      "target": "prod",
+      "targetName": "线上",
+      "questionId": "q14",
+      "scenario": "库存预警",
+      "question": "库存预警在哪里看？",
+      "ok": true,
+      "hit": "未命中",
+      "answer": "17:43\n\n非常抱歉，没有找到相关问题的答案。\n\n建议您点击「转人工」进行在线咨询；\n如果您有任何意见或建议，也可以创建在线工单，我们会尽快处理和回复。",
+      "afterQuestion": "17:43\n\n非常抱歉，没有找到相关问题的答案。\n\n建议您点击「转人工」进行在线咨询；\n如果您有任何意见或建议，也可以创建在线工单，我们会尽快处理和回复。\n复制\n有帮助\n没帮助\n17:43\n转人工客服\n评价服务",
+      "actionButtons": [
+        "复制",
+        "有帮助",
+        "没帮助"
+      ],
+      "responseStatuses": [
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200
+      ],
+      "apiCallCount": 12,
+      "failedRequests": [
+        {
+          "url": "https://customer-ai.laiyifen.com/scm-customer-core-server/sse/getAiMessage/ZD-20260630-000048",
+          "failure": "net::ERR_ABORTED"
+        }
+      ],
+      "consoleMessages": [],
+      "screenshotPath": "output/playwright/questions-prod-q14.png"
+    },
+    {
+      "target": "local",
+      "targetName": "本地",
+      "questionId": "q14",
+      "scenario": "库存预警",
+      "question": "库存预警在哪里看？",
+      "ok": true,
+      "hit": "已命中",
+      "answer": "库存预警信息需要通过后端系统权限校验后查询，建议您联系来伊份内部负责库存管理的同事，或通过供应商后台系统查看。如需进一步协助，请提供具体账号或权限相关信息以便核验。",
+      "afterQuestion": "库存预警信息需要通过后端系统权限校验后查询，建议您联系来伊份内部负责库存管理的同事，或通过供应商后台系统查看。如需进一步协助，请提供具体账号或权限相关信息以便核验。\n\nAI 处理结果\n问题类型：菜单定位与操作引导 · P1\n已完成问题判断，可以继续处理当前请求。\n打开订单与对账页\n生成客服工单\n转人工客服\n评价服务\n点击麦克风开始语音转文字，首次会请求麦克风权限。",
+      "actionButtons": [
+        "打开订单与对账页",
+        "生成客服工单"
+      ],
+      "responseStatuses": [
+        200,
+        200,
+        201,
+        200
+      ],
+      "apiCallCount": 4,
+      "failedRequests": [],
+      "consoleMessages": [],
+      "screenshotPath": "output/playwright/questions-local-q14.png"
+    },
+    {
+      "target": "prod",
+      "targetName": "线上",
+      "questionId": "q15",
+      "scenario": "图片识别",
+      "question": "我上传了页面截图，能帮我识别错误提示吗？",
+      "ok": true,
+      "hit": "未命中",
+      "answer": "17:43\n\n非常抱歉，没有找到相关问题的答案。\n\n建议您点击「转人工」进行在线咨询；\n如果您有任何意见或建议，也可以创建在线工单，我们会尽快处理和回复。\n\n感",
+      "afterQuestion": "17:43\n\n非常抱歉，没有找到相关问题的答案。\n\n建议您点击「转人工」进行在线咨询；\n如果您有任何意见或建议，也可以创建在线工单，我们会尽快处理和回复。\n\n感\n\n复制\n有帮助\n没帮助\n17:43\n转人工客服\n评价服务",
+      "actionButtons": [
+        "复制",
+        "有帮助",
+        "没帮助"
+      ],
+      "responseStatuses": [
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200
+      ],
+      "apiCallCount": 12,
+      "failedRequests": [],
+      "consoleMessages": [],
+      "screenshotPath": "output/playwright/questions-prod-q15.png"
+    },
+    {
+      "target": "local",
+      "targetName": "本地",
+      "questionId": "q15",
+      "scenario": "图片识别",
+      "question": "我上传了页面截图，能帮我识别错误提示吗？",
+      "ok": true,
+      "hit": "无响应",
+      "answer": "",
+      "afterQuestion": "",
+      "actionButtons": [],
+      "responseStatuses": [
+        200,
+        200
+      ],
+      "apiCallCount": 2,
+      "failedRequests": [],
+      "consoleMessages": [],
+      "screenshotPath": "output/playwright/questions-local-q15.png"
+    },
+    {
+      "target": "prod",
+      "targetName": "线上",
+      "questionId": "q16",
+      "scenario": "图片附件识别",
+      "question": "请识别这张截图里的错误提示，并告诉我下一步怎么处理。",
+      "ok": true,
+      "uploadAttempted": true,
+      "hit": "未命中",
+      "answer": "17:44\n\n非常抱歉，没有找到相关问题的答案。\n\n建议您点击「转人工",
+      "afterQuestion": "17:44\n\n非常抱歉，没有找到相关问题的答案。\n\n建议您点击「转人工\n复制\n有帮助\n没帮助\n17:44\n转人工客服\n评价服务",
+      "actionButtons": [],
+      "responseStatuses": [
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200
+      ],
+      "apiCallCount": 12,
+      "failedRequests": [
+        {
+          "url": "https://ai-openapi.laiyifen.com/consultant-ai-api/api/parse/file",
+          "failure": "net::ERR_FAILED"
+        }
+      ],
+      "screenshotPath": "output/playwright/questions-prod-q16.png"
+    },
+    {
+      "target": "local",
+      "targetName": "本地",
+      "questionId": "q16",
+      "scenario": "图片附件识别",
+      "question": "请识别这张截图里的错误提示，并告诉我下一步怎么处理。",
+      "ok": true,
+      "uploadAttempted": true,
+      "hit": "已命中",
+      "answer": "home.png\n\n已收到附件，但当前模型未拿到视觉内容。请补充上传包含错误提示的截图，以便我进行识别和处理。建议您提供以下信息：1.错误提示的具体文字或页面截图2.操作路径（如：从哪个页面进入）3.当前时间4.账号信息（如：供应商账号）补充完整信息后，我将协助您分析问题并给出下一步处理建议。若涉及系统缺陷，建议生成P0/P1工单，并通过人工客服进一步核实。\n\nhome.png",
+      "afterQuestion": "home.png\n\n已收到附件，但当前模型未拿到视觉内容。请补充上传包含错误提示的截图，以便我进行识别和处理。建议您提供以下信息：1.错误提示的具体文字或页面截图2.操作路径（如：从哪个页面进入）3.当前时间4.账号信息（如：供应商账号）补充完整信息后，我将协助您分析问题并给出下一步处理建议。若涉及系统缺陷，建议生成P0/P1工单，并通过人工客服进一步核实。\n\nhome.png\nAI 处理结果\n问题类型：附件图片文件识别 · P1\n已完成问题判断，可以继续处理当前请求。\n打开供应商资料页\n生成客服工单\n转人工客服\n评价服务\n点击麦克风开始语音转文字，首次会请求麦克风权限。",
+      "actionButtons": [
+        "预览图片 home.png",
+        "打开供应商资料页",
+        "生成客服工单"
+      ],
+      "responseStatuses": [
+        200,
+        200,
+        201,
+        200,
+        201,
+        200
+      ],
+      "apiCallCount": 6,
+      "failedRequests": [],
+      "screenshotPath": "output/playwright/questions-local-q16.png"
+    }
+  ]
+}
